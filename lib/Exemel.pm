@@ -33,6 +33,24 @@ class Exemel::Element {
     @.nodes.push: $node;
   }
 
+  method set ($attrib, $value) {
+    if $value ~~ Str|Numeric {
+      %.attribs{$attrib} = $value;
+    }
+    if $value ~~ Bool {
+      if $value {
+        %.attribs{$attrib} = $attrib;
+      }
+      else {
+        %.attribs.delete($attrib);
+      }
+    }
+  }
+
+  method unset ($attrib) {
+    %.attribs.delete($attrib);
+  }
+
   method insert-xml (Str $xml) {
     my $element = self.parse($xml);
     self.insert: $element;
@@ -118,14 +136,12 @@ class Exemel::Document is Exemel::Element {
   has $.root;
 
   method parse (Str $xml) {
-    say "Yeah, we're in parse.";
     my $version = '1.0';
     my $encoding;
     my %doctype;
     my $root;
     my $doc = Exemel::Grammar.parse($xml);
     if ($doc) {
-      say "And it matches!";
       if ($doc<xmldecl>) {
         $version = ~$doc<xmldecl><version><value>;
         if ($doc<xmldecl><encoding>) {

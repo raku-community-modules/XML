@@ -5,7 +5,7 @@ BEGIN { @*INC.push: './lib'; }
 use Test;
 use Exemel;
 
-plan 3;
+plan 5;
 
 my $xml = Exemel::Element.new(:name<test>);
 $xml.append: Exemel::Element.new(:name<title>, :nodes(['The title']));
@@ -20,4 +20,13 @@ is $xml.nodes[1].nodes[1].attribs<name>, 'second', 'attribute 2 passed';
 my $text = '<test><title>The title</title><bullocks><item name="first"/><item name="second"/></bullocks></test>';
 
 is $xml, $text, 'element serialized properly';
+
+$xml.nodes[0].set('alt', 'Alternate text');
+$xml.nodes[1].set('standalone', True);
+
+$text ~~ s/'<title>'/<title alt="Alternate text">/;
+$text ~~ s/'<bullocks>'/<bullocks standalone="standalone">/;
+
+is $xml.nodes[1].attribs<standalone>, 'standalone', 'set using Boolean.';
+is $xml, $text, 'element after set serialized properly';
 
