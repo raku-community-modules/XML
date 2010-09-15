@@ -1,0 +1,3 @@
+- Add Exemel::Query::Select, jQuery/CSS selector style select() method.
+- Add Exemel::Query::XPath, the name should be self explanitory.
+- Add Exemel::Format::PrettyPrint, nice nested XML, with inline/block rules.

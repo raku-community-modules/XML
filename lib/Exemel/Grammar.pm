@@ -1,5 +1,6 @@
-## Grammar based on krunen's XML::Grammar::Document.
-## With modifications to make it work with the Exemel model.
+## Grammar originally based on krunen's XML::Grammar::Document.
+## With several modifications to make it work with the new Rakudo,
+## and to make it more optimized for the Exemel model.
 
 grammar Exemel::Grammar;
 
@@ -11,8 +12,8 @@ rule TOP {
   $
 }
 
-token comment { '<!--' ~ '-->' <content> }
-token pi { '<?' ~ '?>' <content> }
+regex comment { '<!--' <content> '-->' }
+regex pi { '<?' <content> '?>' }
 token content { .*? }
 
 rule xmldecl {
@@ -22,12 +23,12 @@ rule xmldecl {
    '?>'
 }
 
-token version { 'version' '=' '"' ~ '"' <value> }
-token encoding { 'encoding' '=' '"' ~ '"' <value> }
+token version { 'version' '=' '"' <value> '"' }
+token encoding { 'encoding' '=' '"' <value> '"' }
 token value { <-[\"]>+ }
 
-rule doctypedecl {
-  '<!DOCTYPE ' <name> ~ '>' <content>
+regex doctypedecl {
+  '<!DOCTYPE ' <name> <content> '>'
 }
 
 rule element {
@@ -39,7 +40,7 @@ rule element {
 }
 
 rule attribute {
-    <name> '=' '"' ~ '"' <value>
+    <name> '=' '"' <value> '"'
 }
 
 rule child {
@@ -50,10 +51,10 @@ rule child {
   | <pi>
 }
 
-token cdata {
- '<![CDATA[' ~ ']]>' <content>
+regex cdata {
+ '<![CDATA[' <content> ']]>'
 }
 
 token textnode { <-[<]>+ }
-token name { <.alpha> <.ident>+ [ ':' <.ident>+ ]? }
+token name { <.alpha> <.ident>* [ ':' <.ident>+ ]? }
 

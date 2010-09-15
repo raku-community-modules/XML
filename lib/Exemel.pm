@@ -1,3 +1,7 @@
+## Exemel -- Object Oriented XML Library
+
+## Exemel::CDATA - represents a CDATA section.
+#  Data is preserved "as is ", right from the [ to the ]]>
 class Exemel::CDATA {
   has $.data;
   method Str() {
@@ -5,6 +9,8 @@ class Exemel::CDATA {
   }
 }
 
+## Exemel::Comment - represents a comment.
+#  Data is preserved "as is", right from the <!-- to the -->
 class Exemel::Comment {
   has $.data;
   method Str() {
@@ -12,10 +18,28 @@ class Exemel::Comment {
   }
 }
 
+## Exemel::PI - represents a PI section.
+#  Data is preserved "as is", right from the <? to the ?>
 class Exemel::PI {
   has $.data;
   method Str() {
     return '<?' ~ $.data ~ '?>';
+  }
+}
+
+## Exemel::Text - represents a text node.
+#  The original text is stored in the 'text' attribute, and is
+#  preserved in its original format, including whitespace.
+#  The default stringification removes extra whitespace, and chomps
+#  the string. If this is not what you expect, call .text directly.
+class Exemel::Text {
+  has $.text;
+  method Str() {
+    my $text = $.text;
+    $text ~~ s:g/\s+/ /;  ## Relace multiple whitespace with a single space.
+    $text ~~ s:g/\s+$//;  ## Chop out trailing spaces.
+    $text.=chomp;         ## Remove a trailing newline if it exists.
+    return $text;
   }
 }
 
@@ -84,19 +108,19 @@ class Exemel::Element {
       for @($node<child>) -> $c {
         my $child;
         if ($c<cdata>) {
-          my $cdata = ~$c<cdata>;
+          my $cdata = ~$c<cdata><content>;
           $child = Exemel::CDATA.new(:data($cdata));
         }
         elsif ($c<comment>) {
-          my $comment = ~$c<comment>;
+          my $comment = ~$c<comment><content>;
           $child = Exemel::Comment.new(:data($comment));
         }
         elsif ($c<pi>) {
-          my $pi = ~$c<pi>;
+          my $pi = ~$c<pi><content>;
           $child = Exemel::PI.new(:data($pi));
         }
         elsif ($c<text>) {
-          $child = ~$c<text>;
+          $child = Exemel::Text.new(:text(~$c<text>));
         }
         elsif ($c<element>) {
           $child = self.parse-node($c<element>);

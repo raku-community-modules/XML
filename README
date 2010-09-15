@@ -6,7 +6,9 @@ that creates objects with special attributes.
 You can also serialize the objects back to text by using an Exemel object
 in a string context.
 
-More work coming along shortly to make this more useful.
+More work coming along shortly to make this more useful, such as Query
+plugins, which add new methods to the Exemel::Element class to make it
+easy to find exactly what you are looking for.
 
 See the tests in t/ for an example of how the library works.
 
