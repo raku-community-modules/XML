@@ -1,0 +1,16 @@
+Exemel -- An Object-Oriented XML Parser for Perl 6
+
+Not much in the way of documentation yet, this is a simple XML parser
+that creates objects with special attributes.
+
+You can also serialize the objects back to text by using an Exemel object
+in a string context.
+
+More work coming along shortly to make this more useful.
+
+See the tests in t/ for an example of how the library works.
+
+The is licensed under the Artistic License 2.0.
+The Exemel::Grammar library is based on the XML::Grammar::Document library
+from http://github.com/krunen/xml but modified to work with the new Rakudo,
+and some minor changes specific to the Exemel model.
