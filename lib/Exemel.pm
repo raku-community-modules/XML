@@ -232,7 +232,7 @@ class Exemel::Element {
 }
 
 class Exemel::Document is Exemel::Element {
-  has $.version;
+  has $.version = '1.0';
   has $.encoding;
   has %.doctype;
   has $.root;
