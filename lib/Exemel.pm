@@ -98,7 +98,7 @@ class Exemel::Element {
     return;
   }
 
-  method parse-node($node) {
+  method parse-node ($node) {
     my $name = ~$node<name>;
     my %attribs;
     my @nodes;
@@ -148,7 +148,7 @@ class Exemel::Element {
   #
   #  Eg.  @items = $form.elements(:TAG<input>, :type<checkbox>);
   #
-  method elements(*%query) {
+  method elements (*%query) {
     my @elements;
     for @.nodes -> $node {
       if $node ~~ Exemel::Element {
@@ -172,7 +172,7 @@ class Exemel::Element {
   # match-type($type)
   #   returns all child elements which are $type objects.
   #
-  method match-type($type) {
+  method match-type ($type) {
     my @elements;
     for @.nodes -> $node {
       if $node ~~ $type {
@@ -209,7 +209,6 @@ class Exemel::Element {
   method contents() {
     self.match-type(Exemel::Text);
   }
-
 
   method Str() {
     my $element = '<' ~ $.name;
