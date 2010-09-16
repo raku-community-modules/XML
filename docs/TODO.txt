@@ -1,3 +1,8 @@
-- Add Exemel::Query::Select, jQuery/CSS selector style select() method.
-- Add Exemel::Query::XPath, the name should be self explanitory.
-- Add Exemel::Format::PrettyPrint, nice nested XML, with inline/block rules.
+- Add Exemel::Query, jQuery/CSS and XPath selectors.
+  Create: my $xquery = Exemel::Query.new($xml);
+    Where $xml must be an Exemel::Element object.
+
+- Add Exemel::Formatter, pretty printing and more.
+  Create: my $formatter = Exemel::Formatter($xml);
+    Where $xml may be an Exemel::Element or an Exemel::Document.
+

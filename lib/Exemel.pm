@@ -37,10 +37,15 @@ class Exemel::Text {
   method Str() {
     my $text = $.text;
     $text ~~ s:g/\s+/ /;  ## Relace multiple whitespace with a single space.
-    $text ~~ s:g/\s+$//;  ## Chop out trailing spaces.
     $text.=chomp;         ## Remove a trailing newline if it exists.
     return $text;
   }
+  method string() {
+    my $text = self.Str();
+    $text ~~ s:g/\s+$//;  ## Chop out trailing spaces.
+    return $text;
+  }
+
 }
 
 class Exemel::Element {
@@ -132,6 +137,79 @@ class Exemel::Element {
     }
     return Exemel::Element.new(:$name, :%attribs, :@nodes);
   }
+
+  # elements()
+  #   return all child elements
+  #
+  # elements(:TAG($tagname), :attrib1($value), ...)
+  #   return all child elements that match the given query.
+  #   If :TAG is specified, then the element tag must match.
+  #   Any other parameter passed in the query is an attribute to match.
+  #
+  #  Eg.  @items = $form.elements(:TAG<input>, :type<checkbox>);
+  #
+  method elements(*%query) {
+    my @elements;
+    for @.nodes -> $node {
+      if $node ~~ Exemel::Element {
+        my $matched = True;
+        for %query.kv -> $key, $val {
+          if $key eq 'TAG' {
+            if $node.name ne $val { $matched = False; }
+          }
+          else {
+            if $node.attribs{$key} ne $val { $matched = False; }
+          }
+        }
+        if $matched {
+          @elements.push: $node;
+        }
+      }
+    }
+    return @elements;
+  }
+
+  # match-type($type)
+  #   returns all child elements which are $type objects.
+  #
+  method match-type($type) {
+    my @elements;
+    for @.nodes -> $node {
+      if $node ~~ $type {
+        @elements.push: $node;
+      }
+    }
+    return @elements;
+  }
+
+  # comments()
+  #   returns all child comments.
+  #
+  method comments() {
+    self.match-type(Exemel::Comment);
+  }
+
+  # cdata()
+  #   returns all child CDATA sections.
+  #
+  method cdata() {
+    self.match-type(Exemel::CDATA);
+  }
+
+  # instructions()
+  #   returns all child PI sections.
+  #
+  method instructions() {
+    self.match-type(Exemel::PI);
+  }
+
+  # contents()
+  #   returns all child text segments.
+  #
+  method contents() {
+    self.match-type(Exemel::Text);
+  }
+
 
   method Str() {
     my $element = '<' ~ $.name;

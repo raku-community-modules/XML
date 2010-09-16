@@ -1,4 +1,4 @@
-Exemel -- An Object-Oriented XML Parser for Perl 6
+Exemel -- An Object-Oriented XML Framework for Perl 6
 
 Not much in the way of documentation yet, this is a simple XML parser
 that creates objects with special attributes.
@@ -6,9 +6,8 @@ that creates objects with special attributes.
 You can also serialize the objects back to text by using an Exemel object
 in a string context.
 
-More work coming along shortly to make this more useful, such as Query
-plugins, which add new methods to the Exemel::Element class to make it
-easy to find exactly what you are looking for.
+I'm planning on a couple of utility classes to make working with Exemel
+even easier. See docs/TODO.txt for more information.
 
 See the tests in t/ for an example of how the library works.
 
