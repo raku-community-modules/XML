@@ -56,5 +56,9 @@ regex cdata {
 }
 
 token textnode { <-[<]>+ }
-token name { <.alpha> <.ident>* [ ':' <.ident>+ ]? }
+token pident {
+  | <.ident>
+  | '-'
+}
+token name { <.alpha> <pident>* [ ':' <pident>+ ]? }
 
