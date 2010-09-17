@@ -40,7 +40,7 @@ rule element {
 }
 
 rule attribute {
-    <name> '=' '"' <value> '"'
+    <name> '=' '"' <value>? '"'
 }
 
 rule child {
