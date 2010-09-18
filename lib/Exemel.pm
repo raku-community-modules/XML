@@ -50,9 +50,24 @@ class Exemel::Text {
 
 class Exemel::Element {
   use Exemel::Grammar;
-  has $.name;
-  has @.nodes;
-  has %.attribs;
+  has $.name is rw;    ## We may want to change element type.
+  has @.nodes is rw;   ## Cloning requires rw.
+  has %.attribs is rw; ## Cloning requires rw.
+
+  method deep-clone() {
+    my $clone = self.clone;
+    $clone.attribs = $clone.attribs.clone;
+    $clone.nodes = $clone.nodes.clone;
+    loop (my $i=0; $i < $clone.nodes.elems; $i++) {
+      if ($clone.nodes[$i] ~~ Exemel::Element) {
+        $clone.nodes[$i] = $clone.nodes[$i].deep-clone;
+      }
+      else {
+        $clone.nodes[$i] = $.nodes[$i].clone;
+      }
+    }
+    return $clone;
+  }
 
   method insert ($node) {
     @.nodes.unshift: $node;
