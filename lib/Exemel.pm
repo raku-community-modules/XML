@@ -34,18 +34,19 @@ class Exemel::PI {
 #  the string. If this is not what you expect, call .text directly.
 class Exemel::Text {
   has $.text;
-  method Str() {
+  method Str(:$strip) {
     my $text = $.text;
     $text ~~ s:g/\s+/ /;  ## Relace multiple whitespace with a single space.
+    if $strip {
+        $text ~~ s:g/\s+$//;  ## Chop out trailing spaces.
+        $text ~~ s:g/^\s+//;  ## Chop out leading spaces.
+    }
     $text.=chomp;         ## Remove a trailing newline if it exists.
     return $text;
   }
   method string() {
-    my $text = self.Str();
-    $text ~~ s:g/\s+$//;  ## Chop out trailing spaces.
-    return $text;
+    return self.Str(:strip);
   }
-
 }
 
 class Exemel::Element {
