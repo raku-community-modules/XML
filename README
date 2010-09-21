@@ -1,5 +1,7 @@
 Exemel -- An Object-Oriented XML Framework for Perl 6
 
+Status: Stable
+
 Not much in the way of documentation yet, this is a simple XML parser
 that creates objects with special attributes.
 
