@@ -60,5 +60,5 @@ token pident {
   | <.ident>
   | '-'
 }
-token name { <.alpha> <pident>* [ ':' <pident>+ ]? }
+token name { <pident>+ [ ':' <pident>+ ]? }
 
