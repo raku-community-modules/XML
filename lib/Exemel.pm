@@ -280,6 +280,7 @@ class Exemel::Document is Exemel::Element {
       $root = Exemel::Element.parse-node($doc<root>);
       return Exemel::Document.new(:$root, :$version, :$encoding, :%doctype);
     }
+    return;
   }
 
   method Str() {
