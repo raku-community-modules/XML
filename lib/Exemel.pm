@@ -1,8 +1,11 @@
 ## Exemel -- Object Oriented XML Library
 
+## Exemel abstract role, used for $object ~~ Exemel
+role Exemel {}
+
 ## Exemel::CDATA - represents a CDATA section.
 #  Data is preserved "as is ", right from the [ to the ]]>
-class Exemel::CDATA {
+class Exemel::CDATA does Exemel {
   has $.data;
   method Str() {
     return '<![CDATA[' ~ $.data ~ ']]>';
@@ -11,7 +14,7 @@ class Exemel::CDATA {
 
 ## Exemel::Comment - represents a comment.
 #  Data is preserved "as is", right from the <!-- to the -->
-class Exemel::Comment {
+class Exemel::Comment does Exemel {
   has $.data;
   method Str() {
     return '<!--' ~ $.data ~ '-->';
@@ -20,7 +23,7 @@ class Exemel::Comment {
 
 ## Exemel::PI - represents a PI section.
 #  Data is preserved "as is", right from the <? to the ?>
-class Exemel::PI {
+class Exemel::PI does Exemel {
   has $.data;
   method Str() {
     return '<?' ~ $.data ~ '?>';
@@ -32,7 +35,7 @@ class Exemel::PI {
 #  preserved in its original format, including whitespace.
 #  The default stringification removes extra whitespace, and chomps
 #  the string. If this is not what you expect, call .text directly.
-class Exemel::Text {
+class Exemel::Text does Exemel {
   has $.text;
   method Str(:$strip) {
     my $text = $.text;
@@ -49,7 +52,7 @@ class Exemel::Text {
   }
 }
 
-class Exemel::Element {
+class Exemel::Element does Exemel {
   use Exemel::Grammar;
   has $.name is rw;    ## We may want to change element type.
   has @.nodes is rw;   ## Cloning requires rw.
@@ -254,7 +257,8 @@ class Exemel::Element {
 
 }
 
-class Exemel::Document is Exemel::Element {
+class Exemel::Document does Exemel {
+  use Exemel::Grammar;
   has $.version = '1.0';
   has $.encoding;
   has %.doctype;
