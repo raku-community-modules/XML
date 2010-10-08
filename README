@@ -14,6 +14,11 @@ even easier. See docs/TODO.txt for more information.
 See the tests in t/ for an example of how the library works.
 
 The is licensed under the Artistic License 2.0.
+http://www.perlfoundation.org/artistic_license_2_0
+
 The Exemel::Grammar library is based on the XML::Grammar::Document library
 from http://github.com/krunen/xml but modified to work with the new Rakudo,
 and some minor changes specific to the Exemel model.
+
+Primary Author: Timothy Totten
+
