@@ -167,12 +167,27 @@ class Exemel::Element does Exemel {
   #
   #  Eg.  @items = $form.elements(:TAG<input>, :type<checkbox>);
   #
-  method elements (*%query) {
+  #  There are two other 'special' tags that don't match attributes, but
+  #  set rules for the elements query:
+  #   
+  #    RECURSE   If set to a non-zero digit, child elements will also be
+  #              searched for elements matching the queries. By default
+  #              only non-matching elements will be searched (so only the
+  #              top-most matching elements will be returned.)
+  #
+  #    NEST      If set to a positive value, the RECURSE option will apply to
+  #              ALL child elements, including ones that have already matched
+  #              the query and been added to the results.
+  #
+  method elements (*%query is copy) {
     my @elements;
     for @.nodes -> $node {
       if $node ~~ Exemel::Element {
         my $matched = True;
         for %query.kv -> $key, $val {
+          if $key eq 'RECURSE' { next; } # Skip recurse setting.
+          if $key eq 'NEST'    { next; } # Skip nesting recurse setting.
+          
           if $key eq 'TAG' {
             if $node.name ne $val { $matched = False; }
           }
@@ -182,6 +197,12 @@ class Exemel::Element does Exemel {
         }
         if $matched {
           @elements.push: $node;
+        }
+        if ( %query<RECURSE> && (%query<NEST> || !$matched ) ) {
+          my %opts = %query.clone;
+          %opts<RECURSE> = %query<RECURSE> - 1;
+          my @subelements = $node.elements(|%opts);
+          @elements.push: |@subelements;
         }
       }
     }

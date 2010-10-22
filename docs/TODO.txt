@@ -1,3 +1,5 @@
+- Add tests for the RECURSE and NEST options to the elements() method.
+
 - Add Exemel::Query, jQuery/CSS and XPath selectors.
   Create: my $xquery = Exemel::Query.new($xml);
     Where $xml must be an Exemel::Element object.
