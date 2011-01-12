@@ -192,7 +192,12 @@ class Exemel::Element does Exemel {
             if $node.name ne $val { $matched = False; }
           }
           else {
-            if $node.attribs{$key} ne $val { $matched = False; }
+            if ($val ~~ Bool) {
+              if ! $node.attribs.exists($key) { $matched = False; }
+            }
+            else {
+              if $node.attribs{$key} ne $val { $matched = False; }
+            }
           }
         }
         if $matched {
