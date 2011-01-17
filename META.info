@@ -1,0 +1,8 @@
+{
+  "name"        : "Exemel",
+  "version"     : "*",
+  "description" : "An object-oriented XML library",
+  "depends"     : [ ],
+  "repo-type"   : "git",
+  "repo-url"    : "git://github.com/supernovus/exemel.git"
+}
