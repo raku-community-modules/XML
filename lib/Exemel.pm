@@ -264,8 +264,8 @@ class Exemel::Element does Exemel {
       $element ~= '>';
       my $lastnode;
       for @.nodes -> $node {
-        if (
-          defined $lastnode && $lastnode ~~ Exemel::Text 
+        if (                ## Use this on anything now.
+          defined $lastnode #&& $lastnode ~~ Exemel::Text 
           && ~$lastnode !~~ /\s+$/ && $node ~~ Exemel::Text
         ) {
           $element ~= ' '; ## Add a space.
