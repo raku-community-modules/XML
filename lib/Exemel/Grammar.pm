@@ -28,7 +28,7 @@ token encoding { 'encoding' '=' '"' <value> '"' }
 token value { <-[\"]>+ }
 
 regex doctypedecl {
-  '<!DOCTYPE ' <name> <content> '>'
+  '<!DOCTYPE' \s+ <name> <content> '>'
 }
 
 rule element {

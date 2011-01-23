@@ -298,14 +298,14 @@ class Exemel::Document does Exemel {
     my $doc = Exemel::Grammar.parse($xml);
     if ($doc) {
       if ($doc<xmldecl>) {
-        $version = ~$doc<xmldecl><version><value>;
-        if ($doc<xmldecl><encoding>) {
-          $encoding = ~$doc<encoding><value>;
+        $version = ~$doc<xmldecl>[0]<version><value>;
+        if ($doc<xmldecl>[0]<encoding>) {
+          $encoding = ~$doc<xmldecl>[0]<encoding>[0]<value>;
         }
       }
       if ($doc<doctypedecl>) {
-        %doctype<type> = ~$doc<doctypedecl><name>;
-        %doctype<value> = ~$doc<doctypedecl><content>;
+        %doctype<type> = ~$doc<doctypedecl>[0]<name>;
+        %doctype<value> = ~$doc<doctypedecl>[0]<content>;
       }
       $root = Exemel::Element.parse-node($doc<root>);
       return Exemel::Document.new(:$root, :$version, :$encoding, :%doctype);
