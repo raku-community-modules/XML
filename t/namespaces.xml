@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<test xmlns="http://ns.z4y.net/test" xmlns:ex="http://ns.z4y.net/example/1.0">
+  <title>
+    The title
+  </title>
+  <bullocks>
+    <ex:item name="first"/>
+    <ex:item name="second"/>
+  </bullocks>
+  <nested>
+    Nothing to see here, move along.
+    <item>A nested item, oh boy.</item>
+    With more text after it, hurray.
+  </nested>
+</test>
