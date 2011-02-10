@@ -5,7 +5,7 @@ BEGIN { @*INC.unshift: './lib'; }
 use Test;
 use Exemel;
 
-plan 12;
+plan 13;
 
 ## This should be in its own test, but for now this will do.
 my $xml = Exemel::Document.load('./t/namespaces.xml');
@@ -60,4 +60,5 @@ $xml.root.append-xml('<yes:itis>a custom namespace</yes:itis>');
 @items = $xml.root.elements(:URI($newuri));
 
 is @items.elems, 1, 'elements(:URI) returns the corect count.';
+is @items[0].contents, 'a custom namespace', 'elements(:URI) returns the proper element.';
 
