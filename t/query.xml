@@ -15,7 +15,7 @@
     This is a nested block.
     With some text in it.
     Whoop di do da.
-    <a href="hello world">hello</a>
+    <a id="hi" href="hello world">hello</a>
     Now it works. Bloody <b>hell</b>.
   </nested>
 </test>

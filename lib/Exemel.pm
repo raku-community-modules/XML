@@ -1,7 +1,10 @@
 ## Exemel -- Object Oriented XML Library
 
-## Exemel abstract role, used for $object ~~ Exemel
-role Exemel {}
+## Exemel role, used for $object ~~ Exemel
+## Also implements the $.parent attribute.
+role Exemel {
+  has $.parent is rw;
+}
 
 ## Exemel::CDATA - represents a CDATA section.
 #  Data is preserved "as is ", right from the [ to the ]]>
@@ -54,9 +57,10 @@ class Exemel::Text does Exemel {
 
 class Exemel::Element does Exemel {
   use Exemel::Grammar;
-  has $.name is rw;    ## We may want to change element type.
-  has @.nodes is rw;   ## Cloning requires rw.
-  has %.attribs is rw; ## Cloning requires rw.
+  has $.name is rw;          ## We may want to change element type.
+  has @.nodes is rw;         ## Cloning requires rw.
+  has %.attribs is rw;       ## Cloning requires rw.
+  has $.idattr is rw = 'id'; ## Default id attribute is, well, 'id'.
 
   method deep-clone() {
     my $clone = self.clone;
@@ -69,16 +73,26 @@ class Exemel::Element does Exemel {
       else {
         $clone.nodes[$i] = $.nodes[$i].clone;
       }
+      if ($clone.nodes[$i] ~~ Exemel) {
+        $clone.nodes[$i].parent = $clone;
+      }
     }
     return $clone;
   }
 
+  method !reparent ($node) {
+    if ($node ~~ Exemel) {
+      $node.parent = self;
+    }
+    return $node;
+  }
+
   method insert ($node) {
-    @.nodes.unshift: $node;
+    @.nodes.unshift: self!reparent($node);
   }
 
   method append ($node) {
-    @.nodes.push: $node;
+    @.nodes.push: self!reparent($node);
   }
 
   method set ($attrib, $value) {
@@ -117,7 +131,7 @@ class Exemel::Element does Exemel {
     return;
   }
 
-  method parse-node ($node) {
+  method parse-node ($node, $mother?) {
     my $name = ~$node<name>;
     my %attribs;
     my @nodes;
@@ -128,33 +142,42 @@ class Exemel::Element does Exemel {
         %attribs{$an} = ~$a<value>;
       }
     }
+
+    my $parent = Exemel::Element.new(:$name, :%attribs);
+
+    if ($mother) {
+      $parent.parent = $mother;
+    }
+
     if ($node<child>) {
       for @($node<child>) -> $c {
         my $child;
         if ($c<cdata>) {
-          my $cdata = ~$c<cdata><content>;
-          $child = Exemel::CDATA.new(:data($cdata));
+          my $data = ~$c<cdata><content>;
+          $child = Exemel::CDATA.new(:$data, :$parent);
         }
         elsif ($c<comment>) {
-          my $comment = ~$c<comment><content>;
-          $child = Exemel::Comment.new(:data($comment));
+          my $data = ~$c<comment><content>;
+          $child = Exemel::Comment.new(:$data, :$parent);
         }
         elsif ($c<pi>) {
-          my $pi = ~$c<pi><content>;
-          $child = Exemel::PI.new(:data($pi));
+          my $data = ~$c<pi><content>;
+          $child = Exemel::PI.new(:$data, :$parent);
         }
         elsif ($c<text>) {
-          $child = Exemel::Text.new(:text(~$c<text>));
+          my $text = ~$c<text>;
+          $child = Exemel::Text.new(:$text, :$parent);
         }
         elsif ($c<element>) {
-          $child = self.parse-node($c<element>);
+          $child = self.parse-node($c<element>, $parent);
         }
         if defined $child {
           @nodes.push: $child;
         }
       }
     }
-    return Exemel::Element.new(:$name, :%attribs, :@nodes);
+    $parent.nodes = @nodes;
+    return $parent;
   }
 
   # elements()
@@ -166,8 +189,18 @@ class Exemel::Element does Exemel {
   #   Any other parameter passed in the query is an attribute to match.
   #
   #  Eg.  @items = $form.elements(:TAG<input>, :type<checkbox>);
+
+  #   In addition to :TAG there is also :NS, which matches a namespace
+  #   prefix. Yes, the prefix, so if you know the namespace URI but not
+  #   the prefix, use $document.root.getNamespacePrefix($uri); first.
   #
-  #  There are two other 'special' tags that don't match attributes, but
+  #  E.g. $myns  = $doc.root.getNamespacePrefix('http://ns.z4y.net/example');
+  #       @items = $doc.root.elements(:NS($myns));
+  #
+  #  NOTE: Don't use NS with TAG, as TAG must match the whole name, including
+  #        the namespace, so using NS as well is redundant.
+  #
+  #  There are three other 'special' keys that don't match attributes, but
   #  set rules for the elements query:
   #   
   #    RECURSE   If set to a non-zero digit, child elements will also be
@@ -179,6 +212,10 @@ class Exemel::Element does Exemel {
   #              ALL child elements, including ones that have already matched
   #              the query and been added to the results.
   #
+  #    SINGLE    If set to a positive value, elements will return only the
+  #              first matching element. If no elements match it will return
+  #              an empty array.
+  #
   method elements (*%query is copy) {
     my @elements;
     for @.nodes -> $node {
@@ -187,9 +224,18 @@ class Exemel::Element does Exemel {
         for %query.kv -> $key, $val {
           if $key eq 'RECURSE' { next; } # Skip recurse setting.
           if $key eq 'NEST'    { next; } # Skip nesting recurse setting.
+          if $key eq 'SINGLE'  { next; } # Skup single element setting.
           
           if $key eq 'TAG' {
             if $node.name ne $val { $matched = False; }
+          }
+          elsif $key eq 'NS' {
+            if ($val eq '') {
+              if $node.name ~~ / ':' / { $matched = False; }
+            }
+            else {
+              if $node.name !~~ / ^ $val ':' / { $matched = False; }
+            }
           }
           else {
             if ($val ~~ Bool) {
@@ -201,17 +247,51 @@ class Exemel::Element does Exemel {
           }
         }
         if $matched {
-          @elements.push: $node;
+          if (%query<SINGLE>) {
+            return $node;
+          }
+          else {
+            @elements.push: $node;
+          }
         }
         if ( %query<RECURSE> && (%query<NEST> || !$matched ) ) {
           my %opts = %query.clone;
           %opts<RECURSE> = %query<RECURSE> - 1;
-          my @subelements = $node.elements(|%opts);
-          @elements.push: |@subelements;
+          my $subelements = $node.elements(|%opts);
+          @elements.push: |$subelements;
+        }
+        if (%query<SINGLE> && @elements.elems > 0) {
+          return @elements[0];
         }
       }
     }
     return @elements;
+  }
+
+  ## Inspired by the DOM. If a matching element is found, it will
+  ## return it, otherwise it will return false.
+  method getElementById ($id) {
+    my %query = {
+      'RECURSE' => 99,       ## don't nest this deep, please?
+      'SINGLE'  => True,     ## an id should be unique, first come first serve.
+      $.idattr  => $id,      ## the id attribute is configurable.
+    };
+    my $element = self.elements(|%query);
+    if ($element) {
+      return $element;
+    }
+  }
+
+  ## A way to look up an XML Namespace URI and find out what prefix it has.
+  ## Returns Nil if there is no defined namespace prefix.
+  ## Returns '' if the requested URI is the default XML namespace.
+  method getNamespacePrefix ($uri) {
+    for $.attribs.kv -> $key, $val {
+      if $val eq $uri {
+        return $key.subst(/^xmlns\:?/, '');
+      }
+    }
+    return;
   }
 
   # match-type($type)
@@ -288,7 +368,8 @@ class Exemel::Document does Exemel {
   has $.version = '1.0';
   has $.encoding;
   has %.doctype;
-  has $.root;
+  has $.root is rw; ## not sure I like this being rw, but needed for $.parent.
+  has $.filename is rw; ## Optional, used for new load() and save() methods.
 
   method parse (Str $xml) {
     my $version = '1.0';
@@ -307,8 +388,10 @@ class Exemel::Document does Exemel {
         %doctype<type> = ~$doc<doctypedecl>[0]<name>;
         %doctype<value> = ~$doc<doctypedecl>[0]<content>;
       }
-      $root = Exemel::Element.parse-node($doc<root>);
-      return Exemel::Document.new(:$root, :$version, :$encoding, :%doctype);
+      my $document = Exemel::Document.new(:$version, :$encoding, :%doctype);
+      $root = Exemel::Element.parse-node($doc<root>, $document);
+      $document.root = $root;
+      return $document;
     }
     return;
   }
@@ -324,6 +407,51 @@ class Exemel::Document does Exemel {
     }
     $document ~= $.root;
     return $document;
+  }
+
+  ## The original Exemel::Document had no concept of files.
+  ## I am now adding an optional load() and save() ability for quick
+  ## XML configuration files, etc. This is completely optional, and
+  ## can be ignored if you don't want to use it.
+
+  ## load() is used instead of parse() to create a new object.
+  ## e.g.:  my $doc = Exemel::Document.load("myfile.xml");
+  ##
+  method load (Str $filename) {
+    if ($filename.IO ~~ :f) {
+      my $text = slurp($filename);
+      my $xml = self.parse($text);
+      $xml.filename = $filename;
+      return $xml;
+    }
+  }
+
+  ## save() is used on an instance. It has three forms.
+  ##
+  ##   $doc.save();
+  ## Saves back to the file that was loaded previously.
+  ## If there is no filename set, this will return false.
+  ##
+  ##   $doc.save("newfilename.xml");
+  ## Saves the XML to a new file. Sets the new filename to the default,
+  ## so that future calls to save() will use the new filename.
+  ##
+  ##   $doc.save("newfilename.xml", true);
+  ## Saves the XML to a new file. Does not override the existing filename,
+  ## so future calls to save() will save to the original file, not the new one.
+  ##
+  method save (Str $filename?, Bool $copy?) {
+    my $fname = $.filename;
+    if ($filename) {
+      $fname = $filename;
+      if (!$copy) {
+        $.filename = $filename;
+      }
+    }
+    if (!$fname) { return False; }
+    my $file = open $filename, :w;
+    $file.say: self;
+    $file.close;
   }
 
 }
