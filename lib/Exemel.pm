@@ -190,15 +190,17 @@ class Exemel::Element does Exemel {
   #
   #  Eg.  @items = $form.elements(:TAG<input>, :type<checkbox>);
 
-  #   In addition to :TAG there is also :NS, which matches a namespace
-  #   prefix. Yes, the prefix, so if you know the namespace URI but not
-  #   the prefix, use $document.root.getNamespacePrefix($uri); first.
+  #   In addition to :TAG there is also :NS, which matches a namespace prefix.
   #
-  #  E.g. $myns  = $doc.root.getNamespacePrefix('http://ns.z4y.net/example');
-  #       @items = $doc.root.elements(:NS($myns));
+  # Eg.   @items = $doc.root.elements(:NS<tal>);
   #
-  #  NOTE: Don't use NS with TAG, as TAG must match the whole name, including
-  #        the namespace, so using NS as well is redundant.
+  #   If you prefer to do your lookup by Namespace URI, you can use the
+  #   URI method instead:
+  #
+  # Eg.   @items = $doc.root.elements(:URI<http://my.site.com/namespace/1.0>);
+  #
+  #  NOTE: NS and URI are not really compatible with TAG, as TAG needs to have
+  #   the whole tag name, including prefix. This may change in the future.
   #
   #  There are three other 'special' keys that don't match attributes, but
   #  set rules for the elements query:
@@ -229,14 +231,19 @@ class Exemel::Element does Exemel {
           if $key eq 'TAG' {
             if $node.name ne $val { $matched = False; }
           }
-          elsif $key eq 'NS' {
-            if ($val eq '') {
+          elsif $key eq 'NS' | 'URI' {
+            my $prefix = $val;
+            if $key eq 'URI' {
+              $prefix = self.nsPrefix($val);
+            }
+            if ($prefix eq '') {
               if $node.name ~~ / ':' / { $matched = False; }
             }
             else {
-              if $node.name !~~ / ^ $val ':' / { $matched = False; }
+              if $node.name !~~ / ^ $prefix ':' / { $matched = False; }
             }
           }
+          
           else {
             if ($val ~~ Bool) {
               if ! $node.attribs.exists($key) { $matched = False; }
@@ -285,13 +292,41 @@ class Exemel::Element does Exemel {
   ## A way to look up an XML Namespace URI and find out what prefix it has.
   ## Returns Nil if there is no defined namespace prefix.
   ## Returns '' if the requested URI is the default XML namespace.
-  method getNamespacePrefix ($uri) {
+  method nsPrefix ($uri) {
     for $.attribs.kv -> $key, $val {
       if $val eq $uri {
         return $key.subst(/^xmlns\:?/, '');
       }
     }
     return;
+  }
+
+  ## A way to look up an XML Namespace Prefix, and find out what URI it has.
+  ## Returns Nil if there is no namespace assigned.
+  ## Call it without a prefix or with a prefix of '' to find the default
+  ## namespace URI.
+  method nsURI ($prefix?) {
+    if ($prefix) {
+      if $.attribs.exists("xmlns:$prefix") {
+        return $.attribs{"xmlns:$prefix"};
+      }
+    }
+    else {
+      if $.attribs.exists("xmlns") {
+        return $.attribs{"xmlns"};
+      }
+    }
+    return;
+  }
+
+  ## A quick way to set a namespace.
+  method setNamespace ($uri, $prefix?) {
+    if ($prefix) {
+      $.attribs{"xmlns:$prefix"} = $uri;
+    }
+    else {
+      $.attribs{"xmlns"} = $uri;
+    }
   }
 
   # match-type($type)
