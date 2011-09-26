@@ -1,3 +1,4 @@
 *.pir
+*.swp
 Makefile
 blib/

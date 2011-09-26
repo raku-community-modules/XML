@@ -240,7 +240,16 @@ class Exemel::Element does Exemel {
               if $node.name ~~ / ':' / { $matched = False; }
             }
             else {
-              if $node.name !~~ / ^ $prefix ':' / { $matched = False; }
+              ## Temporary hack until Rakudo's variable interpolation is
+              ## working again in RegExes. 
+              if $node.name ~~ / ^ (\w+) ':' / {
+                if $0.Str ne $prefix { $matched = False; }
+              }
+              else {
+                $matched = False;
+              }
+              ## Re-enable this code once variable interpolation is fixed.
+              #if $node.name !~~ / ^ $prefix ':' / { $matched = False; }
             }
           }
           
@@ -413,6 +422,7 @@ class Exemel::Document does Exemel {
     my $root;
     my $doc = Exemel::Grammar.parse($xml);
     if ($doc) {
+      $*ERR.say: "We parsed the doc";
       if ($doc<xmldecl>) {
         $version = ~$doc<xmldecl>[0]<version><value>;
         if ($doc<xmldecl>[0]<encoding>) {
