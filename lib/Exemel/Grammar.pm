@@ -39,8 +39,9 @@ rule element {
   ]
 }
 
+## The \s+ below should not be necessary. Remove it once this is fixed in nom.
 rule attribute {
-    <name> '=' '"' <value>? '"'
+   \s+ <name> '=' '"' <value>? '"'
 }
 
 rule child {
