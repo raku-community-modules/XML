@@ -132,11 +132,16 @@ class Exemel::Element does Exemel {
   }
 
   method parse-node ($node, $mother?) {
-    my $name = ~$node<name>;
+    $*ERR.say: "node: $node";
+    my $name = $node<name>.Str;
+    $*ERR.say: "name: $name";
     my %attribs;
     my @nodes;
 
+    $*ERR.say: "attr elems: "~$node<attribute>.elems;
+
     if ($node<attribute>) {
+      $*ERR.say: "attribute found";
       for @($node<attribute>) -> $a {
         my $an = ~$a<name>;
         %attribs{$an} = ~$a<value>;
@@ -149,7 +154,12 @@ class Exemel::Element does Exemel {
       $parent.parent = $mother;
     }
 
+    $*ERR.say: $node.caps;#.fmt('%s = %s',"\n");
+
+    $*ERR.say: "child elems: "~$node<child>.elems;
+
     if ($node<child>) {
+      $*ERR.say: "child found";
       for @($node<child>) -> $c {
         my $child;
         if ($c<cdata>) {
