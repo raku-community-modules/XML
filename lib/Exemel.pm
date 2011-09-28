@@ -252,14 +252,16 @@ class Exemel::Element does Exemel {
             else {
               ## Temporary hack until Rakudo's variable interpolation is
               ## working again in RegExes. 
-              if $node.name ~~ / ^ (\w+) ':' / {
-                if $0.Str ne $prefix { $matched = False; }
-              }
-              else {
-                $matched = False;
-              }
+              #if $node.name ~~ / ^ (\w+) ':' / {
+              #  if $0.Str ne $prefix { $matched = False; }
+              # }
+              #else {
+              #  $matched = False;
+              #}
               ## Re-enable this code once variable interpolation is fixed.
-              #if $node.name !~~ / ^ $prefix ':' / { $matched = False; }
+              ## It seems to be working again, so I've re-enabled this.
+              ## TODO: remove the above hackage in next release.
+              if $node.name !~~ / ^ $prefix ':' / { $matched = False; }
             }
           }
           
