@@ -2,6 +2,11 @@ Exemel -- An Object-Oriented XML Framework for Perl 6
 
 Status: Stable
 
+NOTE: Currently only works with the "ng" branch of Rakudo.
+      The "nom" branch is currently missing some important grammar/regex
+      functionality that is required by Exemel. Once the functionality is
+      in place, Exemel will be ported to "nom". Sorry for the inconvenience.
+
 Not much in the way of documentation yet, this is a simple XML parser
 that creates objects with special attributes.
 

@@ -132,16 +132,16 @@ class Exemel::Element does Exemel {
   }
 
   method parse-node ($node, $mother?) {
-    $*ERR.say: "node: $node";
+    #$*ERR.say: "node: $node";
     my $name = $node<name>.Str;
-    $*ERR.say: "name: $name";
+    #$*ERR.say: "name: $name";
     my %attribs;
     my @nodes;
 
-    $*ERR.say: "attr elems: "~$node<attribute>.elems;
+    #$*ERR.say: "attr elems: "~$node<attribute>.elems;
 
     if ($node<attribute>) {
-      $*ERR.say: "attribute found";
+      #$*ERR.say: "attribute found";
       for @($node<attribute>) -> $a {
         my $an = ~$a<name>;
         %attribs{$an} = ~$a<value>;
@@ -154,12 +154,12 @@ class Exemel::Element does Exemel {
       $parent.parent = $mother;
     }
 
-    $*ERR.say: $node.caps;#.fmt('%s = %s',"\n");
+    #$*ERR.say: $node.caps;#.fmt('%s = %s',"\n");
 
-    $*ERR.say: "child elems: "~$node<child>.elems;
+    #$*ERR.say: "child elems: "~$node<child>.elems;
 
     if ($node<child>) {
-      $*ERR.say: "child found";
+      #$*ERR.say: "child found";
       for @($node<child>) -> $c {
         my $child;
         if ($c<cdata>) {
@@ -434,7 +434,7 @@ class Exemel::Document does Exemel {
     my $root;
     my $doc = Exemel::Grammar.parse($xml);
     if ($doc) {
-      $*ERR.say: "We parsed the doc";
+      #$*ERR.say: "We parsed the doc";
       if ($doc<xmldecl>) {
         $version = ~$doc<xmldecl>[0]<version><value>;
         if ($doc<xmldecl>[0]<encoding>) {
