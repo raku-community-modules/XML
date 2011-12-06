@@ -4,6 +4,10 @@
 ## Also implements the $.parent attribute.
 role Exemel {
   has $.parent is rw;
+  ## For Exemel classes, the gist is the stringified form.
+  method gist() {
+    return self.Str();
+  }
 }
 
 ## Exemel::CDATA - represents a CDATA section.
@@ -144,7 +148,9 @@ class Exemel::Element does Exemel {
       #$*ERR.say: "attribute found";
       for @($node<attribute>) -> $a {
         my $an = ~$a<name>;
-        %attribs{$an} = ~$a<value>;
+        my $av = ~$a<value>;
+        say "Setting $an to $av";
+        %attribs{$an} = $av;
       }
     }
 
@@ -232,6 +238,7 @@ class Exemel::Element does Exemel {
     my @elements;
     for @.nodes -> $node {
       if $node ~~ Exemel::Element {
+        say "In a $node node";
         my $matched = True;
         for %query.kv -> $key, $val {
           if $key eq 'RECURSE' { next; } # Skip recurse setting.
@@ -239,7 +246,7 @@ class Exemel::Element does Exemel {
           if $key eq 'SINGLE'  { next; } # Skup single element setting.
           
           if $key eq 'TAG' {
-            if $node.name ne $val { $matched = False; }
+            if $node.name ne $val { $matched = False; last; }
           }
           elsif $key eq 'NS' | 'URI' {
             my $prefix = $val;
@@ -247,30 +254,20 @@ class Exemel::Element does Exemel {
               $prefix = self.nsPrefix($val);
             }
             if ($prefix eq '') {
-              if $node.name ~~ / ':' / { $matched = False; }
+              if $node.name ~~ / ':' / { $matched = False; last; }
             }
             else {
-              ## Temporary hack until Rakudo's variable interpolation is
-              ## working again in RegExes. 
-              #if $node.name ~~ / ^ (\w+) ':' / {
-              #  if $0.Str ne $prefix { $matched = False; }
-              # }
-              #else {
-              #  $matched = False;
-              #}
-              ## Re-enable this code once variable interpolation is fixed.
-              ## It seems to be working again, so I've re-enabled this.
-              ## TODO: remove the above hackage in next release.
-              if $node.name !~~ / ^ $prefix ':' / { $matched = False; }
+              if $node.name !~~ / ^ $prefix ':' / { $matched = False; last; }
             }
           }
           
           else {
             if ($val ~~ Bool) {
-              if ! $node.attribs.exists($key) { $matched = False; }
+              if ! $node.attribs.exists($key) { $matched = False; last; }
             }
             else {
-              if $node.attribs{$key} ne $val { $matched = False; }
+              say "Looking for $key attrib of $val";
+              if $node.attribs{$key} ne $val { $matched = False; last; }
             }
           }
         }
@@ -284,6 +281,7 @@ class Exemel::Element does Exemel {
         }
         if ( %query<RECURSE> && (%query<NEST> || !$matched ) ) {
           my %opts = %query.clone;
+          say "Recursive query opts: "~%opts.perl;
           %opts<RECURSE> = %query<RECURSE> - 1;
           my $subelements = $node.elements(|%opts);
           @elements.push: |$subelements;
@@ -297,17 +295,15 @@ class Exemel::Element does Exemel {
   }
 
   ## Inspired by the DOM. If a matching element is found, it will
-  ## return it, otherwise it will return false.
+  ## return it, otherwise it will return null.
   method getElementById ($id) {
     my %query = {
       'RECURSE' => 99,       ## don't nest this deep, please?
       'SINGLE'  => True,     ## an id should be unique, first come first serve.
       $.idattr  => $id,      ## the id attribute is configurable.
     };
-    my $element = self.elements(|%query);
-    if ($element) {
-      return $element;
-    }
+    $*ERR.say: "Query is: "~%query.perl;
+    return self.elements(|%query);
   }
 
   ## A way to look up an XML Namespace URI and find out what prefix it has.

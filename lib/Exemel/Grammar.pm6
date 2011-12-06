@@ -12,9 +12,8 @@ rule TOP {
   $
 }
 
-regex comment { '<!--' <content> '-->' }
-regex pi { '<?' <content> '?>' }
-token content { .*? }
+regex comment { '<!--' $<content>=[.*?] '-->' }
+regex pi { '<?' $<content>=[.*?] '?>' }
 
 rule xmldecl {
    '<?xml'
@@ -28,7 +27,7 @@ token encoding { 'encoding' '=' '"' <value> '"' }
 token value { <-[\"]>+ }
 
 regex doctypedecl {
-  '<!DOCTYPE' \s+ <name> <content> '>'
+  '<!DOCTYPE' \s+ <name> $<content>=[.*?] '>'
 }
 
 rule element {
@@ -40,7 +39,7 @@ rule element {
 }
 
 rule attribute {
-   <name> '=' '"' <value>? '"'
+   <name> '=' '"' $<value>=[.*?] '"' 
 }
 
 rule child {
@@ -52,7 +51,7 @@ rule child {
 }
 
 regex cdata {
- '<![CDATA[' <content> ']]>'
+ '<![CDATA[' $<content>=[.*?] ']]>'
 }
 
 token textnode { <-[<]>+ }
@@ -60,5 +59,5 @@ token pident {
   | <.ident>
   | '-'
 }
-token name { <pident>+ [ ':' <pident>+ ]? }
+token name { <.pident>+ [ ':' <.pident>+ ]? }
 
