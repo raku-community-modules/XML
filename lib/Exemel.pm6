@@ -143,14 +143,14 @@ class Exemel::Element does Exemel {
     my @nodes;
 
     #$*ERR.say: "attr elems: "~$node<attribute>.elems;
-    $*ERR.say: "attribs: "~$node<attribute>;
+#    $*ERR.say: "attribs: "~$node<attribute>;
 
     if ($node<attribute>) {
-      $*ERR.say: "attribute found";
+#      $*ERR.say: "attribute found";
       for @($node<attribute>) -> $a {
         my $an = ~$a<name>;
         my $av = ~$a<value>;
-        say "Setting $an to $av";
+#        $*ERR.say: "Setting $an to $av";
         %attribs{$an} = $av;
       }
     }
@@ -285,7 +285,14 @@ class Exemel::Element does Exemel {
 #          say "Recursive query opts: "~%opts.perl;
           %opts<RECURSE> = %query<RECURSE> - 1;
           my $subelements = $node.elements(|%opts);
-          @elements.push: |$subelements;
+          if $subelements {
+            if $subelements ~~ Array {
+              @elements.push: |$subelements;
+            }
+            else {
+              @elements.push: $subelements;
+            }
+          }
         }
         if (%query<SINGLE> && @elements.elems > 0) {
           return @elements[0];
@@ -306,7 +313,7 @@ class Exemel::Element does Exemel {
       'SINGLE'  => True,     ## an id should be unique, first come first serve.
       $.idattr  => $id,      ## the id attribute is configurable.
     };
-    $*ERR.say: "Query is: "~%query.perl;
+#    $*ERR.say: "Query is: "~%query.perl;
     return self.elements(|%query);
   }
 

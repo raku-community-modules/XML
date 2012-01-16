@@ -15,7 +15,7 @@ my $xml = Exemel::Element.parse($text);
 
 #say "We made it past parse";
 
-say "XML == $xml";
+#say "XML == $xml";
 
 my @items = $xml.nodes[2].elements();
 
@@ -48,7 +48,7 @@ is $xml.nodes[3].contents[1], 'Now it works. Bloody ', 'direct query on contents
 
 my $byid = $xml.getElementById('hi');
 
-say $byid;
+#say $byid;
 
 ok $byid ~~ Exemel::Element, 'getElementById() returns an element.';
 is $byid.attribs<href>, 'hello world', 'getElementById() returned proper element.';
