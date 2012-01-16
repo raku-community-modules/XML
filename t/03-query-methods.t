@@ -15,7 +15,7 @@ my $xml = Exemel::Element.parse($text);
 
 #say "We made it past parse";
 
-#say $xml;
+say "XML == $xml";
 
 my @items = $xml.nodes[2].elements();
 

@@ -138,14 +138,14 @@ class Exemel::Element does Exemel {
   method parse-node ($node, $mother?) {
     #$*ERR.say: "node: $node";
     my $name = $node<name>.Str;
-    #$*ERR.say: "name: $name";
+    $*ERR.say: "name: $name";
     my %attribs;
     my @nodes;
 
     #$*ERR.say: "attr elems: "~$node<attribute>.elems;
 
     if ($node<attribute>) {
-      #$*ERR.say: "attribute found";
+      $*ERR.say: "attribute found";
       for @($node<attribute>) -> $a {
         my $an = ~$a<name>;
         my $av = ~$a<value>;
@@ -162,7 +162,7 @@ class Exemel::Element does Exemel {
 
     #$*ERR.say: $node.caps;#.fmt('%s = %s',"\n");
 
-    #$*ERR.say: "child elems: "~$node<child>.elems;
+    $*ERR.say: "child elems: "~$node<child>.elems;
 
     if ($node<child>) {
       #$*ERR.say: "child found";
@@ -238,7 +238,7 @@ class Exemel::Element does Exemel {
     my @elements;
     for @.nodes -> $node {
       if $node ~~ Exemel::Element {
-        say "In a $node node";
+#       say "In a $node node";
         my $matched = True;
         for %query.kv -> $key, $val {
           if $key eq 'RECURSE' { next; } # Skip recurse setting.
@@ -266,7 +266,7 @@ class Exemel::Element does Exemel {
               if ! $node.attribs.exists($key) { $matched = False; last; }
             }
             else {
-              say "Looking for $key attrib of $val";
+#              say "Looking for $key attrib of $val";
               if $node.attribs{$key} ne $val { $matched = False; last; }
             }
           }
@@ -281,7 +281,7 @@ class Exemel::Element does Exemel {
         }
         if ( %query<RECURSE> && (%query<NEST> || !$matched ) ) {
           my %opts = %query.clone;
-          say "Recursive query opts: "~%opts.perl;
+#          say "Recursive query opts: "~%opts.perl;
           %opts<RECURSE> = %query<RECURSE> - 1;
           my $subelements = $node.elements(|%opts);
           @elements.push: |$subelements;
@@ -290,6 +290,9 @@ class Exemel::Element does Exemel {
           return @elements[0];
         }
       }
+    }
+    if (%query<SINGLE>) {
+      return False;
     }
     return @elements;
   }

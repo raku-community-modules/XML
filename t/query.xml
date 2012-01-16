@@ -13,6 +13,8 @@
   </bullocks>
   <nested>
     This is a nested block.
+    <what the="fuck"/>.
+    <more this="that">stuff</more>.
     With some text in it.
     Whoop di do da.
     <a id="hi" href="hello world">hello</a>
