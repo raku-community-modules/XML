@@ -138,11 +138,12 @@ class Exemel::Element does Exemel {
   method parse-node ($node, $mother?) {
     #$*ERR.say: "node: $node";
     my $name = $node<name>.Str;
-    $*ERR.say: "name: $name";
+    #$*ERR.say: "name: $name";
     my %attribs;
     my @nodes;
 
     #$*ERR.say: "attr elems: "~$node<attribute>.elems;
+    $*ERR.say: "attribs: "~$node<attribute>;
 
     if ($node<attribute>) {
       $*ERR.say: "attribute found";
@@ -162,7 +163,7 @@ class Exemel::Element does Exemel {
 
     #$*ERR.say: $node.caps;#.fmt('%s = %s',"\n");
 
-    $*ERR.say: "child elems: "~$node<child>.elems;
+    #$*ERR.say: "child elems: "~$node<child>.elems;
 
     if ($node<child>) {
       #$*ERR.say: "child found";
