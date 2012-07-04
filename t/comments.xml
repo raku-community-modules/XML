@@ -3,9 +3,13 @@
   <title>
     The   title
   </title>
+  <!-- The first comment -->
   <bullocks>
+    <!-- Another comment -->
     <item name="first"/>
+    <!-- And yet another -->
     <item name="second"/>
+    <!-- And one more -->
   </bullocks>
   <nested>
     This is a nested block.
