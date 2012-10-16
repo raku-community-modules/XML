@@ -21,7 +21,7 @@ is $xml, $head~$text, 'parsed back to xml';
 
 $xml.root.append-xml('<bogus value="false"/>');
 
-is $xml.root.nodes[2].attribs<value>, 'false', 'insert-xml worked';
+is $xml.root.nodes[2].attribs<value>, 'false', 'append-xml worked';
 
 $text ~~ s/'</test>'/<bogus value="false"\/><\/test>/;
 
