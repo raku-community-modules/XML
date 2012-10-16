@@ -27,6 +27,39 @@ see the tests in t/ to get a good idea of how the library works.
 
 ## TODO
 
+### Add more DOM-like methods
+
+I want to make Exemel easy to use for people used to the DOM.
+To that end, in addition to the current Perl-like methods, there should be
+as many of the DOM elements as possible.
+
+### Add [] and {} postfix methods to Exemel::Element
+
+Basically I want:
+
+```perl
+  my $name = $xml[1]<name>;
+```
+
+to do the same thing as:
+
+```perl
+  my $name = $xml.nodes[1].attribs<name>;
+```
+
+Look at using Proxy, to support setters using this syntax too.
+
+Also, using the [] and {} calls on an Exemel::Document, should pass the
+calls onto the root Element. For that matter add a handles rule for
+'attribs' and 'nodes' to proxy them to the root Element too.
+
+### Rewrite constructor APIs
+
+When Exemel was originally written, having multiple new() methods wasn't
+working properly. That bug has long been fixed, but for some reason Exemel
+was never updated. The old parse() methods in the Element and Document 
+classes can be deprecated and proxied off to multi dispatch new() methods.
+
 ### Add Exemel::Query
 
 You can associate any Exemel::Element or Exemel::Document object with a query:
