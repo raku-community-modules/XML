@@ -39,7 +39,7 @@ It then provides an XPath 1.0 query method:
 
 ```perl
   ## Select all <title/> elements with a 'lang' attribute of 'en'.
-  my @titles = $xml.findnodes('//title[@lang='en']");
+  my @titles = $xml.findnodes('//title[@lang="en"]');
 ```
 
 Plus, a jQuery/CSS selector method:
