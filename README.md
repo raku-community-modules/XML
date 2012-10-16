@@ -53,12 +53,10 @@ Also, using the [] and {} calls on an Exemel::Document, should pass the
 calls onto the root Element. For that matter add a handles rule for
 'attribs' and 'nodes' to proxy them to the root Element too.
 
-### Rewrite constructor APIs
+### Add documentation
 
-When Exemel was originally written, having multiple new() methods wasn't
-working properly. That bug has long been fixed, but for some reason Exemel
-was never updated. The old parse() methods in the Element and Document 
-classes can be deprecated and proxied off to multi dispatch new() methods.
+The Exemel library needs better documentation of its classes, methods, and
+the exported 'from-xml' method.
 
 ### Add Exemel::Query
 

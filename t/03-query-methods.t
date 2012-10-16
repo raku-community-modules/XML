@@ -11,7 +11,7 @@ my $text = slurp('./t/query.xml');
 
 #say "We're starting the parse";
 
-my $xml = Exemel::Element.parse($text);
+my $xml = Exemel::Element.new($text);
 
 ok $xml ~~ Exemel::Element, 'Element parsed properly.';
 

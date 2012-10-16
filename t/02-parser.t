@@ -5,12 +5,14 @@ BEGIN { @*INC.unshift: './lib'; }
 use Test;
 use Exemel;
 
-plan 8;
+plan 9;
 
 my $text = '<test><title>The title</title><bullocks><item name="first"/><item name="second"/></bullocks></test>';
 
-my $xml = Exemel::Document.parse($text);
+my $xml = from-xml($text); #Exemel::Document.new($text);
 my $head = '<?xml version="1.0"?>';
+
+ok $xml ~~ Exemel::Document, 'Document parsed properly.';
 
 is $xml.root.name, 'test', 'root name parsed';
 #$*ERR.say: "XML: $xml";
