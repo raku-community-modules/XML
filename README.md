@@ -8,16 +8,16 @@ It handles parsing, generating, manipulating and querying XML.
 It supports element queries, parent element information, namespaces,
 and an extendable interface.
 
-It supports every major kind of XML Node:
+It supports every major kind of XML Node (XML::Node):
 
- * Document
- * Element
- * Text
- * Comment
- * PI
- * CDATA
+ * Document (XML::Document)
+ * Element (XML::Element)
+ * Text (XML::Text)
+ * Comment (XML::Comment)
+ * PI (XML::PI)
+ * CDATA (XML::CDATA)
 
-You can easily serialize the objects back to XML text by using an Exemel 
+You can easily serialize the objects back to XML text by using any XML::Node
 object in a string context.
 
 ## Examples
@@ -49,21 +49,21 @@ to do the same thing as:
 
 Look at using Proxy, to support setters using this syntax too.
 
-Also, using the [] and {} calls on an Exemel::Document, should pass the
+Also, using the [] and {} calls on an XML::Document, should pass the
 calls onto the root Element. For that matter add a handles rule for
 'attribs' and 'nodes' to proxy them to the root Element too.
 
 ### Add documentation
 
-The Exemel library needs better documentation of its classes, methods, and
+The XML library needs better documentation of its classes, methods, and
 the exported 'from-xml' method.
 
-### Add Exemel::Query
+### Add XML::Query
 
-You can associate any Exemel::Element or Exemel::Document object with a query:
+You can associate any XML::Element or XML::Document object with a query:
 
 ```perl
-  my $xq = Exemel::Query($xml);
+  my $xq = XML::Query($xml);
 ```
 
 It then provides an XPath 1.0 query method:
@@ -80,12 +80,12 @@ Plus, a jQuery/CSS selector method:
   my @inputs = $xq.select('input[type="radio"]');
 ```
 
-### Add Exemel::Formatter
+### Add XML::Formatter
 
 Enable pretty printing, and more, all with flexible rules.
 
 ```perl
-  my $xf = Exemel::Formatter.new(
+  my $xf = XML::Formatter.new(
     :end-cap,          ## Put a space before a closing singleton end slash.
     :indent(2),        ## Indent nested elements with 2 spacing units.
     :use-spaces,       ## Use spaces as the spacing units (see also :use-tabs)
@@ -123,8 +123,8 @@ Timothy Totten, supernovus on #perl6, https://github.com/supernovus/
 
 ### Note
 
-The Exemel::Grammar library was originally based on the 
-[XML::Grammar::Document](http://github.com/krunen/xml) 
+The XML::Grammar library was originally based on the now defunct
+[XML::Grammar::Document](http://github.com/krunen/xml) library,
 but modified to work with Rakudo 'ng' and later 'nom', 
 with other changes specific to the Exemel model.
 

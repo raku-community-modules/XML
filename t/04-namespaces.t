@@ -3,14 +3,14 @@
 BEGIN { @*INC.unshift: './lib'; }
 
 use Test;
-use Exemel;
+use XML;
 
 plan 13;
 
 ## This should be in its own test, but for now this will do.
-my $xml = Exemel::Document.load('./t/namespaces.xml');
+my $xml = XML::Document.load('./t/namespaces.xml');
 
-ok $xml ~~ Exemel::Document, 'Exemel::Document.load() works';
+ok $xml ~~ XML::Document, 'XML::Document.load() works';
 
 ## Now, let's do the real namespace tests.
 my $myns = $xml.root.nsPrefix('http://ns.z4y.net/example/1.0');

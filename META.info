@@ -1,7 +1,7 @@
 {
-  "name"        : "Exemel",
+  "name"        : "XML",
   "version"     : "*",
-  "description" : "An simple pure-perl XML library (parsing, manipulation, emitting, queries, etc.)",
+  "description" : "A full-featured, pure-perl XML library (parsing, manipulation, emitting, queries, etc.)",
   "depends"     : [ ],
   "source-url"  : "git://github.com/supernovus/exemel.git"
 }

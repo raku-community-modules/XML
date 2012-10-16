@@ -1,20 +1,20 @@
-## Exemel -- Object Oriented XML Library
+## XML -- Object Oriented XML Library
 
-## Exemel::Node role, used for $object ~~ Exemel::Node
+## XML::Node role, used for $object ~~ XML::Node
 ## Also implements the $.parent attribute.
-role Exemel::Node 
+role XML::Node 
 {
   has $.parent is rw;
-  ## For Exemel classes, the gist is the stringified form.
+  ## For XML classes, the gist is the stringified form.
   method gist () 
   {
     return self.Str();
   }
 }
 
-## Exemel::CDATA - represents a CDATA section.
+## XML::CDATA - represents a CDATA section.
 ## Data is preserved "as is ", right from the [ to the ]]>
-class Exemel::CDATA does Exemel::Node 
+class XML::CDATA does XML::Node 
 {
   has $.data;
   method Str () 
@@ -23,9 +23,9 @@ class Exemel::CDATA does Exemel::Node
   }
 }
 
-## Exemel::Comment - represents a comment.
+## XML::Comment - represents a comment.
 ## Data is preserved "as is", right from the <!-- to the -->
-class Exemel::Comment does Exemel::Node 
+class XML::Comment does XML::Node 
 {
   has $.data;
   method Str () 
@@ -34,9 +34,9 @@ class Exemel::Comment does Exemel::Node
   }
 }
 
-## Exemel::PI - represents a PI section.
+## XML::PI - represents a PI section.
 ## Data is preserved "as is", right from the <? to the ?>
-class Exemel::PI does Exemel::Node 
+class XML::PI does XML::Node 
 {
   has $.data;
   method Str ()
@@ -45,12 +45,12 @@ class Exemel::PI does Exemel::Node
   }
 }
 
-## Exemel::Text - represents a text node.
+## XML::Text - represents a text node.
 ## The original text is stored in the 'text' attribute, and is
 ## preserved in its original format, including whitespace.
 ## The default stringification removes extra whitespace, and chomps
 ## the string. If this is not what you expect, call .text directly.
-class Exemel::Text does Exemel::Node 
+class XML::Text does XML::Node 
 {
   has $.text;
   method Str (:$strip) 
@@ -71,9 +71,9 @@ class Exemel::Text does Exemel::Node
   }
 }
 
-class Exemel::Element does Exemel::Node 
+class XML::Element does XML::Node 
 {
-  use Exemel::Grammar;
+  use XML::Grammar;
   has $.name    is rw;         ## We may want to change element type.
   has @.nodes   is rw;         ## Cloning requires rw.
   has %.attribs is rw;         ## Cloning requires rw.
@@ -86,7 +86,7 @@ class Exemel::Element does Exemel::Node
     $clone.nodes = $clone.nodes.clone;
     loop (my $i=0; $i < $clone.nodes.elems; $i++) 
     {
-      if ($clone.nodes[$i] ~~ Exemel::Element) 
+      if ($clone.nodes[$i] ~~ XML::Element) 
       {
         $clone.nodes[$i] = $clone.nodes[$i].deep-clone;
       }
@@ -94,7 +94,7 @@ class Exemel::Element does Exemel::Node
       {
         $clone.nodes[$i] = $.nodes[$i].clone;
       }
-      if ($clone.nodes[$i] ~~ Exemel::Node) 
+      if ($clone.nodes[$i] ~~ XML::Node) 
       {
         $clone.nodes[$i].parent = $clone;
       }
@@ -108,12 +108,12 @@ class Exemel::Element does Exemel::Node
     return $node;
   }
 
-  multi method insert (Exemel::Node $node) 
+  multi method insert (XML::Node $node) 
   {
     @.nodes.unshift: self!reparent($node);
   }
 
-  multi method append (Exemel::Node $node) 
+  multi method append (XML::Node $node) 
   {
     @.nodes.push: self!reparent($node);
   }
@@ -131,7 +131,7 @@ class Exemel::Element does Exemel::Node
     return False;
   }
 
-  method insert-before (Exemel::Node $existing, Exemel::Node $new, :$offset=0)
+  method insert-before (XML::Node $existing, XML::Node $new, :$offset=0)
   {
     my $pos = self.index-of(* === $existing) + $offset;
     if $pos ~~ Int
@@ -140,12 +140,12 @@ class Exemel::Element does Exemel::Node
     }
   }
 
-  method insert-after (Exemel::Node $existing, Exemel::Node $new, :$offset=1)
+  method insert-after (XML::Node $existing, XML::Node $new, :$offset=1)
   {
     self.insert-before($existing, $new, :$offset);
   }
 
-  multi method before (Exemel::Node $node)
+  multi method before (XML::Node $node)
   {
     if $.parent
     {
@@ -153,7 +153,7 @@ class Exemel::Element does Exemel::Node
     }
   }
 
-  multi method after (Exemel::Node $node)
+  multi method after (XML::Node $node)
   {
     if $.parent
     {
@@ -166,18 +166,18 @@ class Exemel::Element does Exemel::Node
     my $new = self.new(:$name, :%attribs);
     for @contents -> $what
     {
-      if $what ~~ Exemel::Node
+      if $what ~~ XML::Node
       {
         $new.append($what);
       }
       elsif $what ~~ Str
       {
-        my $text = Exemel::Text.new(:text($what));
+        my $text = XML::Text.new(:text($what));
         $new.append($text);
       }
       elsif $what.can('Str')
       {
-        my $text = Exemel::Text.new(:text($what.Str));
+        my $text = XML::Text.new(:text($what.Str));
         $new.append($text);
       }
     }
@@ -271,14 +271,14 @@ class Exemel::Element does Exemel::Node
 
   multi method new (Str $xml) 
   {
-    my $match = Exemel::Grammar.parse($xml);
+    my $match = XML::Grammar.parse($xml);
     if ($match) 
     {
       return self.parse-node($match<root>);
     }
     else
     {
-      die "Could not parse XML passed to Exemel::Element.new()";
+      die "Could not parse XML passed to XML::Element.new()";
     }
   }
 
@@ -304,7 +304,7 @@ class Exemel::Element does Exemel::Node
       }
     }
 
-    my $parent = Exemel::Element.new(:$name, :%attribs);
+    my $parent = XML::Element.new(:$name, :%attribs);
 
     if ($mother) 
     {
@@ -319,22 +319,22 @@ class Exemel::Element does Exemel::Node
         if ($c<cdata>) 
         {
           my $data = ~$c<cdata><content>;
-          $child = Exemel::CDATA.new(:$data, :$parent);
+          $child = XML::CDATA.new(:$data, :$parent);
         }
         elsif ($c<comment>) 
         {
           my $data = ~$c<comment><content>;
-          $child = Exemel::Comment.new(:$data, :$parent);
+          $child = XML::Comment.new(:$data, :$parent);
         }
         elsif ($c<pi>) 
         {
           my $data = ~$c<pi><content>;
-          $child = Exemel::PI.new(:$data, :$parent);
+          $child = XML::PI.new(:$data, :$parent);
         }
         elsif ($c<text>) 
         {
           my $text = ~$c<text>;
-          $child = Exemel::Text.new(:$text, :$parent);
+          $child = XML::Text.new(:$text, :$parent);
         }
         elsif ($c<element>) 
         {
@@ -393,7 +393,7 @@ class Exemel::Element does Exemel::Node
     my @elements;
     for @.nodes -> $node 
     {
-      if $node ~~ Exemel::Element 
+      if $node ~~ XML::Element 
       {
         my $matched = True;
         for %query.kv -> $key, $val 
@@ -570,7 +570,7 @@ class Exemel::Element does Exemel::Node
   #
   method comments() 
   {
-    self.match-type(Exemel::Comment);
+    self.match-type(XML::Comment);
   }
 
   # cdata()
@@ -578,7 +578,7 @@ class Exemel::Element does Exemel::Node
   #
   method cdata() 
   {
-    self.match-type(Exemel::CDATA);
+    self.match-type(XML::CDATA);
   }
 
   # instructions()
@@ -586,7 +586,7 @@ class Exemel::Element does Exemel::Node
   #
   method instructions() 
   {
-    self.match-type(Exemel::PI);
+    self.match-type(XML::PI);
   }
 
   # contents()
@@ -594,7 +594,7 @@ class Exemel::Element does Exemel::Node
   #
   method contents() 
   {
-    self.match-type(Exemel::Text);
+    self.match-type(XML::Text);
   }
 
   method Str() 
@@ -610,8 +610,8 @@ class Exemel::Element does Exemel::Node
       my $lastnode;
       for @.nodes -> $node {
 #        if (                ## Use this on anything now.
-#          defined $lastnode #&& $lastnode ~~ Exemel::Text 
-#          && ~$lastnode !~~ /\s+$/ && $node ~~ Exemel::Text
+#          defined $lastnode #&& $lastnode ~~ XML::Text 
+#          && ~$lastnode !~~ /\s+$/ && $node ~~ XML::Text
 #        ) {
 #          $element ~= ' '; ## Add a space.
 #        }
@@ -629,9 +629,9 @@ class Exemel::Element does Exemel::Node
 
 }
 
-class Exemel::Document does Exemel::Node 
+class XML::Document does XML::Node 
 {
-  use Exemel::Grammar;
+  use XML::Grammar;
   has $.version = '1.0';
   has $.encoding;
   has %.doctype;
@@ -644,7 +644,7 @@ class Exemel::Document does Exemel::Node
     my $encoding;
     my %doctype;
     my $root;
-    my $doc = Exemel::Grammar.parse($xml);
+    my $doc = XML::Grammar.parse($xml);
     if ($doc) 
     {
       #$*ERR.say: "We parsed the doc";
@@ -661,14 +661,14 @@ class Exemel::Document does Exemel::Node
         %doctype<type> = ~$doc<doctypedecl>[0]<name>;
         %doctype<value> = ~$doc<doctypedecl>[0]<content>;
       }
-      $root = Exemel::Element.parse-node($doc<root>);
+      $root = XML::Element.parse-node($doc<root>);
     }
     my $this = self.new(:$version, :$encoding, :%doctype, :$root, :$filename);
     $root.parent = $this;
     return $this;
   }
 
-  multi method new (Exemel::Element $root)
+  multi method new (XML::Element $root)
   {
     my $this = self.new(:$root);
     $root.parent = $this;
@@ -697,13 +697,13 @@ class Exemel::Document does Exemel::Node
     return $document;
   }
 
-  ## The original Exemel::Document had no concept of files.
+  ## The original XML::Document had no concept of files.
   ## I am now adding an optional load() and save() ability for quick
   ## XML configuration files, etc. This is completely optional, and
   ## can be ignored if you don't want to use it.
 
   ## load() is used instead of new() to create a new object.
-  ## e.g.:  my $doc = Exemel::Document.load("myfile.xml");
+  ## e.g.:  my $doc = XML::Document.load("myfile.xml");
   ##
   method load (Str $filename) 
   {
@@ -751,23 +751,23 @@ class Exemel::Document does Exemel::Node
 
 }
 
-module Exemel
+module XML
 {
   proto from-xml ($) is export {*}
 
   multi from-xml (Str $xml-string)
   {
-    return Exemel::Document.new($xml-string);
+    return XML::Document.new($xml-string);
   }
 
   multi from-xml (IO $input)
   {
-    return Exemel::Document.new($input.slurp);
+    return XML::Document.new($input.slurp);
   }
 
   multi from-xml (Str :$file)
   {
-    return Exemel::Document.load($file);
+    return XML::Document.load($file);
   }
 }
 

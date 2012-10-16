@@ -1,8 +1,4 @@
-## Grammar originally based on krunen's XML::Grammar::Document.
-## With several modifications to make it work with the new Rakudo,
-## and to make it more optimized for the Exemel model.
-
-grammar Exemel::Grammar;
+grammar XML::Grammar;
 
 rule TOP {
   ^

@@ -3,15 +3,15 @@
 BEGIN { @*INC.unshift: './lib'; }
 
 use Test;
-use Exemel;
+use XML;
 
 plan 5;
 
-my $xml = Exemel::Element.new(:name<test>);
-$xml.append: Exemel::Element.new(:name<title>, :nodes(['The title']));
-$xml.append: Exemel::Element.new(:name<bullocks>, :nodes((
-  Exemel::Element.new(:name<item>, :attribs({:name<first>})),
-  Exemel::Element.new(:name<item>, :attribs({:name<second>})),
+my $xml = XML::Element.new(:name<test>);
+$xml.append: XML::Element.new(:name<title>, :nodes(['The title']));
+$xml.append: XML::Element.new(:name<bullocks>, :nodes((
+  XML::Element.new(:name<item>, :attribs({:name<first>})),
+  XML::Element.new(:name<item>, :attribs({:name<second>})),
 )));
 
 is $xml.nodes[1].nodes[0].attribs<name>, 'first', 'attribute 1 passed';
