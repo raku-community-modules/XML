@@ -1,15 +1,86 @@
 ## XML -- Object Oriented XML Library
 
-## XML::Node role, used for $object ~~ XML::Node
-## Also implements the $.parent attribute.
+class XML::Element  { ... }
+class XML::Document { ... }
+
 role XML::Node 
 {
   has $.parent is rw;
+
   ## For XML classes, the gist is the stringified form.
   method gist () 
   {
     return self.Str();
   }
+
+  method previousSibling ()
+  {
+    if $.parent ~~ XML::Element
+    {
+      my $pos = $.parent.index-of(* === self);
+      if $pos > 0 
+      {
+        return $.parent.nodes[$pos-1];
+      }
+    }
+    return Nil;
+  }
+
+  method nextSibling ()
+  {
+    if $.parent ~~ XML::Element
+    {
+      my $pos = $.parent.index-of(* === self);
+      if $pos < $.parent.nodes.end
+      {
+        return $.parent.nodes[$pos+1];
+      }
+    }
+    return Nil;
+  }
+
+  method remove ()
+  {
+    if $.parent ~~ XML::Element
+    {
+      $.parent.removeChild(self);
+    }
+    return self;
+  }
+
+  method reparent (XML::Element $parent)
+  {
+    self.remove;
+    $.parent = $parent;
+    return self;
+  }
+
+  method cloneNode ()
+  {
+    return self.clone;
+  }
+
+  method ownerDocument ()
+  {
+    if $.parent ~~ XML::Document
+    {
+      return $.parent;
+    }
+    elsif $.parent ~~ XML::Node
+    {
+      return $.parent.ownerDocument;
+    }
+    else
+    {
+      return Nil;
+    }
+  }
+
+  method parentNode ()
+  {
+    return $.parent;
+  }
+
 }
 
 ## XML::CDATA - represents a CDATA section.
@@ -79,43 +150,42 @@ class XML::Element does XML::Node
   has %.attribs is rw;         ## Cloning requires rw.
   has $.idattr  is rw = 'id';  ## Default id attribute is, well, 'id'.
 
-  method deep-clone() 
+  method tagName () { return $.name; }
+
+  method deep-clone ()
+  {
+    warn "deep-clone() is deprecated, please use cloneNode() now.";
+    return self.cloneNode();
+  }
+
+  method cloneNode () 
   {
     my $clone = self.clone;
     $clone.attribs = $clone.attribs.clone;
     $clone.nodes = $clone.nodes.clone;
     loop (my $i=0; $i < $clone.nodes.elems; $i++) 
     {
-      if ($clone.nodes[$i] ~~ XML::Element) 
+      if ($clone.nodes[$i] ~~ XML::Node) 
       {
-        $clone.nodes[$i] = $clone.nodes[$i].deep-clone;
+        $clone.nodes[$i] = $clone.nodes[$i].cloneNode;
+        $clone.nodes[$i].parent = $clone;
       }
       else 
       {
-        $clone.nodes[$i] = $.nodes[$i].clone;
-      }
-      if ($clone.nodes[$i] ~~ XML::Node) 
-      {
-        $clone.nodes[$i].parent = $clone;
+        $clone.nodes[$i] = $clone.nodes[$i].clone;
       }
     }
     return $clone;
   }
 
-  method !reparent ($node) 
-  {
-    $node.parent = self;
-    return $node;
-  }
-
   multi method insert (XML::Node $node) 
   {
-    @.nodes.unshift: self!reparent($node);
+    @.nodes.unshift: $node.reparent(self);
   }
 
   multi method append (XML::Node $node) 
   {
-    @.nodes.push: self!reparent($node);
+    @.nodes.push: $node.reparent(self);
   }
 
   method index-of ($find)
@@ -131,18 +201,82 @@ class XML::Element does XML::Node
     return False;
   }
 
+  method appendChild (XML::Node $node)
+  {
+    self.append: $node;
+  }
+
+  method insertChild (XML::Node $node)
+  {
+    self.insert: $node;
+  }
+
   method insert-before (XML::Node $existing, XML::Node $new, :$offset=0)
   {
     my $pos = self.index-of(* === $existing) + $offset;
     if $pos ~~ Int
     {
-      @.nodes.splice($pos, 0, $new);
+      @.nodes.splice($pos, 0, $new.reparent(self));
     }
+  }
+
+  method insertBefore (XML::Node $new, XML::Node $existing)
+  {
+    self.insert-before($existing, $new);
+    return $new;
   }
 
   method insert-after (XML::Node $existing, XML::Node $new, :$offset=1)
   {
     self.insert-before($existing, $new, :$offset);
+  }
+
+  method insertAfter (XML::Node $new, XML::Node $existing)
+  {
+    self.insert-after($existing, $new);
+    return $new;
+  }
+
+  method replaceChild (XML::Node $new, XML::Node $existing)
+  {
+    my $pos = self.index-of(* === $existing);
+    if $pos ~~ Int
+    {
+      return @.nodes.splice($pos, 1, $new.reparent(self));
+    }
+    else
+    {
+      return False;
+    }
+  }
+
+  method removeChild (XML::Node $node)
+  {
+    my $pos = self.index-of(* === $node);
+    if $pos ~~ Int
+    {
+      return @.nodes.splice($pos, 1);
+    }
+    else
+    {
+      return False;
+    }
+  }
+
+  method firstChild ()
+  {
+    if @.nodes.elems > 0
+    {
+      return @.nodes[0];
+    }
+  }
+
+  method lastChild ()
+  {
+    if @.nodes.elems > 0
+    {
+      return @.nodes[@.nodes.end];
+    }
   }
 
   multi method before (XML::Node $node)
@@ -255,6 +389,26 @@ class XML::Element does XML::Node
   multi method unset (*%attribs)
   {
     self.unset(|%attribs.keys);
+  }
+
+  method is-bool (Str $attrib)
+  {
+    return %.attribs.exists($attrib) && %.attribs{$attrib} eq $attrib;
+  }
+
+  method getAttribute (Str $name)
+  {
+    return %.attribs{$name};
+  }
+
+  method setAttribute (Str $name, $value)
+  {
+    self.set($name, $value);
+  }
+
+  method removeAttribute (Str $name)
+  {
+    self.unset($name);
   }
 
   method insert-xml (Str $xml) {
@@ -508,6 +662,16 @@ class XML::Element does XML::Node
     return self.elements(|%query);
   }
 
+  method getElementsByTagName ($name)
+  {
+    my %query =
+    {
+      'RECURSE' => 999,
+      'TAG'     => $name,
+    };
+    return self.elements(|%query);
+  }
+
   ## A way to look up an XML Namespace URI and find out what prefix it has.
   ## Returns Nil if there is no defined namespace prefix.
   ## Returns '' if the requested URI is the default XML namespace.
@@ -676,11 +840,30 @@ class XML::Document does XML::Node
   has $.encoding;
   has %.doctype;
   has $.root handles <
-    attribs nodes elements getElementById craft
+    attribs nodes elements getElementById getElementsByTagName
     nsURI nsPrefix setNamespace
     append insert set unset insert-before insert-after
+    appendNode insertNode insertBefore insertAfter
+    replaceChild removeChild getAttribute setAttribute removeAttribute
+    craft
   >;
   has $.filename; ## Optional, used for new load() and save() methods.
+
+  method documentElement ()
+  {
+    return $.root;
+  }
+
+  method cloneNode ()
+  {
+    my $root = $.root.cloneNode;
+    my $version = $.version.clone;
+    my $encoding = $.encoding.clone;
+    my %doctype = %.doctype.clone;
+    my $filename = $.filename.clone;
+    my $clone = self.new(:$version, :$encoding, :%doctype, :$root, :$filename);
+    return $clone;
+  }
 
   method postcircumfix:<[ ]> ($offset)
   {
