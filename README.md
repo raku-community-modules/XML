@@ -48,6 +48,34 @@ A _role_ used by the rest of the XML Node classes.
 The XML::Element or XML::Document to which this Node belongs.
 Only an XML::Document will have an undefined _$.parent_ property.
 
+#### remove()
+
+Removes the Node from its parent element.
+
+#### reparent(XML::Element $newparent)
+
+Removes the Node from its existing parent (if any) and sets the
+specified node as it's _$.parent_ property.
+
+#### previousSibling()
+
+Returns the Node that exists in the parent just before this one.
+Returns Nil if there is none.
+
+#### nextSibling()
+
+Returns the Node that exists in the parent just after this one.
+Returns Nil if there is none.
+
+#### cloneNode()
+
+This is a polymorphic method that exists in all XML::Node objects,
+and does what is needed to return a clone of the desired Node.
+
+#### ownerDocument()
+
+Returns the top-level XML::Document that this Node belongs to.
+
 ### XML::Document [XML::Node]
 
 A Node representing an XML document. You can use array access syntax on it
@@ -138,11 +166,6 @@ and thus the most common.
 
 Return a new XML::Element object representing the specified XML string.
 
-#### deep-clone()
-
-Performs a clone operation that clones the attributes and nodes recursively.
-Returns a new XML::Element object representing the clone.
-
 #### insert(XML::Node $node)
 
 Insert an XML::Node at the beginning of our _@.nodes_ list.
@@ -164,6 +187,11 @@ Append an XML::Node to the bottom of our _@.nodes_ list.
 
 See _insert (Str $name, ...)_ but at the bottom.
 
+#### before(XML::Node $existing, XML::Node $new)
+
+Insert the _$new_ Node before the _$existing_ Node.
+It only works if the _$existing_ node is actually found in our _@.nodes_ list.
+
 #### before(XML::Node $node)
 
 Only works if our _$.parent_ is an XML::Element. Inserts the Node
@@ -172,6 +200,10 @@ before the current one.
 #### before(Str $name, ...)
 
 See _insert (Str $name, ...)_ and _before(XML::Node $node)_ and figure it out.
+
+#### insert-after(XML::Node $existing, XML::Node $new)
+
+Like _before($existing, $new)_ but put the node after the _$existing_ one.
 
 #### after(XML::Node $node)
 
@@ -197,14 +229,35 @@ Insert a new XML::Element for the XML string, before the current element.
 
 Insert a new XML::Element for the XML string, after the current element.
 
-#### insert-before(XML::Node $existing, XML::Node $new)
+#### insertBefore(XML::Node $new, XML::Node $existing)
 
-Insert the _$new_ Node before the _$existing_ Node.
-It only works if the _$existing_ node is actually found in our _@.nodes_ list.
+An alternative to _before($existing, $new)_ using DOM semantics.
 
-#### insert-after(XML::Node $existing, XML::Node $new)
+#### insertAfter(XML::Node $new, XML::Node $existing)
 
-Insert the _$new_ Node after the _$existing_ Node.
+An alternative to _after($existing, $new)_ using DOM-like semantics.
+
+#### replace(XML::Node $existing, XML::Node $new)
+
+If the _$existing_ node is found, replace it with _$new_,
+otherwise, we return False.
+
+#### replaceChild(XML::Node $new, XML::Node $existing)
+
+An alternative to _replace()_ with DOM semantics.
+
+#### removeChild (XML::Node $node)
+
+Removes the _$node_ from our child _@.nodes_ if it exists.
+If it doesn't we return False.
+
+#### firstChild()
+
+Return our first child node.
+
+#### lastChild()
+
+Return our last child node.
 
 #### index-of($find)
 
@@ -240,6 +293,11 @@ an attribute to delete.
 We assume the key of each named parameter passed to be the name of
 an attribute to delete. The value means absolutely nothing and is in fact
 ignored entirely.
+
+#### is-bool($attrib)
+
+Returns True if the given attribute exists, and has the same value
+as its name (the definition of an XML boolean.)
 
 #### elements()
 
@@ -292,6 +350,10 @@ attributes that must match.
 #### getElementById($id)
 
 Return the XML::Element with the given id.
+
+#### getElementByTagName($name)
+
+Return an array of XML::Elements with the given tag name.
 
 #### nsPrefix(Str $uri)
 
@@ -380,16 +442,38 @@ Contains the string text of the CDATA.
 
 ## Examples
 
-I'm planning to add some nice examples in here, but for now, 
-see the tests in t/ to get a good idea of how the library works.
+A quick example, for more, see the tests in the 't/' folder.
+
+### test.xml
+
+```xml
+<test>
+  <greeting en="hello">world</greeting>
+  <for>
+    <item>Yes</item>
+    <item>No</item>
+    <item>Maybe</item>
+    <item>Who cares?</item>
+  </for>
+</test>
+```
+
+### test.p6
+
+```perl
+use XML;
+
+my $xml = from-xml(:file<test.xml>);
+
+say $xml[0]<en> ~ $xml[0][0]; ## "hello world"
+say $xml[1][2][0]; ## "Maybe"
+
+$xml[1].append('item', 'Never mind');
+
+say $xml[1][4]; ## <item>Never mind</item>
+```
 
 ## TODO
-
-### Add more DOM-like methods
-
-I want to make Exemel easy to use for people used to the DOM.
-To that end, in addition to the current Perl-like methods, there should be
-wrappers matching the corresponding DOM methods as closely as possible.
 
 ### Add XML::Query
 

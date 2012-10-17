@@ -76,11 +76,6 @@ role XML::Node
     }
   }
 
-  method parentNode ()
-  {
-    return $.parent;
-  }
-
 }
 
 ## XML::CDATA - represents a CDATA section.
@@ -150,14 +145,6 @@ class XML::Element does XML::Node
   has %.attribs is rw;         ## Cloning requires rw.
   has $.idattr  is rw = 'id';  ## Default id attribute is, well, 'id'.
 
-  method tagName () { return $.name; }
-
-  method deep-clone ()
-  {
-    warn "deep-clone() is deprecated, please use cloneNode() now.";
-    return self.cloneNode();
-  }
-
   method cloneNode () 
   {
     my $clone = self.clone;
@@ -201,17 +188,7 @@ class XML::Element does XML::Node
     return False;
   }
 
-  method appendChild (XML::Node $node)
-  {
-    self.append: $node;
-  }
-
-  method insertChild (XML::Node $node)
-  {
-    self.insert: $node;
-  }
-
-  method insert-before (XML::Node $existing, XML::Node $new, :$offset=0)
+  multi method before (XML::Node $existing, XML::Node $new, :$offset=0)
   {
     my $pos = self.index-of(* === $existing) + $offset;
     if $pos ~~ Int
@@ -222,18 +199,18 @@ class XML::Element does XML::Node
 
   method insertBefore (XML::Node $new, XML::Node $existing)
   {
-    self.insert-before($existing, $new);
+    self.before($existing, $new);
     return $new;
   }
 
-  method insert-after (XML::Node $existing, XML::Node $new, :$offset=1)
+  multi method after (XML::Node $existing, XML::Node $new, :$offset=1)
   {
     self.insert-before($existing, $new, :$offset);
   }
 
   method insertAfter (XML::Node $new, XML::Node $existing)
   {
-    self.insert-after($existing, $new);
+    self.after($existing, $new);
     return $new;
   }
 
@@ -248,6 +225,11 @@ class XML::Element does XML::Node
     {
       return False;
     }
+  }
+
+  method replace (XML::Node $existing, XML::Node $new)
+  {
+    return self.replaceChild($new, $existing);
   }
 
   method removeChild (XML::Node $node)
@@ -319,30 +301,30 @@ class XML::Element does XML::Node
     return $new;
   }
 
-  method craft (Str $name, *%attribs, *@contents)
+  method craft (Str $name, *@contents, *%attribs)
   {
     return self!craft-new($name, %attribs, @contents);
   }
 
-  multi method insert (Str $name, *%attribs, *@contents)
+  multi method insert (Str $name, *@contents, *%attribs)
   {
     my $new = self!craft-new($name, %attribs, @contents);
     self.insert($new);
   }
 
-  multi method append (Str $name, *%attribs, *@contents)
+  multi method append (Str $name, *@contents, *%attribs)
   {
     my $new = self!craft-new($name, %attribs, @contents);
     self.append($new);
   }
 
-  multi method before (Str $name, *%attribs, *@contents)
+  multi method before (Str $name, *@contents, *%attribs)
   {
     my $new = self!craft-new($name, %attribs, @contents);
     self.before($new);
   }
 
-  multi method after (Str $name, *%attribs, *@contents)
+  multi method after (Str $name, *@contents, *%attribs)
   {
     my $new = self!craft-new($name, %attribs, @contents);
     self.after($new);
@@ -396,21 +378,6 @@ class XML::Element does XML::Node
     return %.attribs.exists($attrib) && %.attribs{$attrib} eq $attrib;
   }
 
-  method getAttribute (Str $name)
-  {
-    return %.attribs{$name};
-  }
-
-  method setAttribute (Str $name, $value)
-  {
-    self.set($name, $value);
-  }
-
-  method removeAttribute (Str $name)
-  {
-    self.unset($name);
-  }
-
   method insert-xml (Str $xml) {
     my $element = self.new($xml);
     self.insert: $element;
@@ -444,12 +411,6 @@ class XML::Element does XML::Node
     {
       die "Could not parse XML passed to XML::Element.new()";
     }
-  }
-
-  method parse (Str $xml)
-  {
-    warn "parse() is deprecated, please use new() instead.";
-    return self.new($xml);
   }
 
   method parse-node ($node, $mother?) 
@@ -842,17 +803,11 @@ class XML::Document does XML::Node
   has $.root handles <
     attribs nodes elements getElementById getElementsByTagName
     nsURI nsPrefix setNamespace
-    append insert set unset insert-before insert-after
+    append insert set unset before after
     appendNode insertNode insertBefore insertAfter
-    replaceChild removeChild getAttribute setAttribute removeAttribute
-    craft
+    replaceChild removeChild craft
   >;
   has $.filename; ## Optional, used for new load() and save() methods.
-
-  method documentElement ()
-  {
-    return $.root;
-  }
 
   method cloneNode ()
   {
@@ -899,10 +854,14 @@ class XML::Document does XML::Node
         %doctype<value> = ~$doc<doctypedecl>[0]<content>;
       }
       $root = XML::Element.parse-node($doc<root>);
+      my $this = self.new(:$version, :$encoding, :%doctype, :$root, :$filename);
+      $root.parent = $this;
+      return $this;
     }
-    my $this = self.new(:$version, :$encoding, :%doctype, :$root, :$filename);
-    $root.parent = $this;
-    return $this;
+    else
+    {
+      die "could not parse XML";
+    }
   }
 
   multi method new (XML::Element $root)
@@ -910,12 +869,6 @@ class XML::Document does XML::Node
     my $this = self.new(:$root);
     $root.parent = $this;
     return $this;
-  }
-
-  method parse (Str $xml) 
-  {
-    warn "parse() is deprecated, please use new() instead.";
-    return self.new($xml);
   }
 
   method Str() 

@@ -1,0 +1,9 @@
+<test>
+  <greeting en="hello">world</greeting>
+  <for>
+    <item>Yes</item>
+    <item>No</item>
+    <item>Maybe</item>
+    <item>Who cares?</item>
+  </for>
+</test>
