@@ -201,7 +201,7 @@ before the current one.
 
 See _insert (Str $name, ...)_ and _before(XML::Node $node)_ and figure it out.
 
-#### insert-after(XML::Node $existing, XML::Node $new)
+#### after(XML::Node $existing, XML::Node $new)
 
 Like _before($existing, $new)_ but put the node after the _$existing_ one.
 
