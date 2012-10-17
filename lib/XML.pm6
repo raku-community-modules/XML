@@ -147,7 +147,7 @@ class XML::Element does XML::Node
 
   multi method before (XML::Node $node)
   {
-    if $.parent
+    if $.parent ~~ XML::Element
     {
       $.parent.insert-before(self, $node);
     }
@@ -155,7 +155,7 @@ class XML::Element does XML::Node
 
   multi method after (XML::Node $node)
   {
-    if $.parent
+    if $.parent ~~ XML::Element
     {
       $.parent.insert-after(self, $node);
     }
@@ -163,7 +163,8 @@ class XML::Element does XML::Node
 
   method !craft-new (Str $name, %attribs, @contents)
   {
-    my $new = self.new(:$name, :%attribs);
+    my $new = self.new(:$name);
+    $new.set(|%attribs);
     for @contents -> $what
     {
       if $what ~~ XML::Node
@@ -213,7 +214,7 @@ class XML::Element does XML::Node
     self.after($new);
   }
 
-  multi method set ($attrib, $value) 
+  multi method set (Str $attrib, $value) 
   {
     if $value ~~ Str|Numeric 
     {
@@ -230,6 +231,10 @@ class XML::Element does XML::Node
         %.attribs.delete($attrib);
       }
     }
+    elsif $value.can('Str')
+    {
+      %.attribs{$attrib} = $value.Str;
+    }
   }
 
   multi method set (*%attribs)
@@ -240,11 +245,16 @@ class XML::Element does XML::Node
     }
   }
 
-  method unset (*@attribs) {
+  multi method unset (*@attribs) {
     for @attribs -> $attrib
     {
       %.attribs.delete($attrib);
     }
+  }
+
+  multi method unset (*%attribs)
+  {
+    self.unset(|%attribs.keys);
   }
 
   method insert-xml (Str $xml) {
@@ -627,6 +637,36 @@ class XML::Element does XML::Node
     return $element;
   }
 
+  method postcircumfix:<[ ]> ($offset)
+  {
+    my $self = self;
+    Proxy.new(
+      FETCH => method ()
+      {
+        $self.nodes[$offset];
+      },
+      STORE => method ($val)
+      {
+        $self.nodes[$offset] = $val;
+      }
+    );
+  }
+
+  method postcircumfix:<{ }> ($offset)
+  {
+    my $self = self;
+    Proxy.new(
+      FETCH => method ()
+      {
+        $self.attribs{$offset};
+      },
+      STORE => method ($val)
+      {
+        $self.set($offset, $val);
+      }
+    );
+  }
+
 }
 
 class XML::Document does XML::Node 
@@ -635,8 +675,22 @@ class XML::Document does XML::Node
   has $.version = '1.0';
   has $.encoding;
   has %.doctype;
-  has $.root;
+  has $.root handles <
+    attribs nodes elements getElementById craft
+    nsURI nsPrefix setNamespace
+    append insert set unset insert-before insert-after
+  >;
   has $.filename; ## Optional, used for new load() and save() methods.
+
+  method postcircumfix:<[ ]> ($offset)
+  {
+    $.root[$offset];
+  }
+
+  method postcircumfix:<{ }> ($offset)
+  {
+    $.root{$offset};
+  }
 
   multi method new (Str $xml, :$filename)
   {
@@ -734,13 +788,13 @@ class XML::Document does XML::Node
   ##
   method save (Str $filename?, Bool :$copy) 
   {
-    my $fname = $.filename;
+    my $fname = $!filename;
     if ($filename) 
     {
       $fname = $filename;
       if (!$copy) 
       {
-        $.filename = $filename;
+        $!filename = $filename;
       }
     }
     if (!$fname) { return False; }
