@@ -480,7 +480,7 @@ say $xml[1][4]; ## <item>Never mind</item>
 You can associate any XML::Element or XML::Document object with a query:
 
 ```perl
-  my $xq = XML::Query($xml);
+  my $xq = XML::Query.new($xml);
 ```
 
 It then provides an XPath 1.0 query method:
@@ -495,6 +495,22 @@ Plus, a jQuery/CSS selector method:
 ```perl
   ## Select all <input/> elements with a 'type' attribute of 'radio'.
   my @inputs = $xq.select('input[type="radio"]');
+```
+
+An alternate form will be available using precompiled query objects.
+
+An example using XPath:
+
+```perl
+  my $xpath = XML::Query::XPath.new('//title[@lang="en"]');
+  my @titles = $xpath.apply($xml);
+```
+
+An example using jQuery/CSS selectors:
+
+```perl
+  my $jqlike = XML::Query::Selector.new('input[type="radio"]');
+  my @inputs = $jqlike.apply($xml);
 ```
 
 ### Add XML::Formatter
