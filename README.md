@@ -337,6 +337,12 @@ Specify a query of named parameters. Special processing parameters are used:
    If _SINGLE_ is not specified, or is set to False, we return an Array
    of all matches (this may be empty if no nodes matched.)
 
+ * OBJECT
+
+   If this is set to True, instead of returning an Array of results,
+   we will return a XML::Element object with the same name as the original
+   input object, with its nodes set to the matched elements.
+
 Any other named paramters not in the above list, will be assumed to be
 attributes that must match.
 
@@ -351,9 +357,12 @@ attributes that must match.
 
 Return the XML::Element with the given id.
 
-#### getElementByTagName($name)
+#### getElementByTagName($name, :$object?)
 
 Return an array of XML::Elements with the given tag name.
+
+If the boolean $object named parameter is true, then the 'OBJECT' rule will
+be applied to the query sent to elements().
 
 #### nsPrefix(Str $uri)
 

@@ -513,6 +513,11 @@ class XML::Element does XML::Node
   #              first matching element. If no elements match it will return
   #              an empty array.
   #
+  #    OBJECT    If set to a positive value, instead of returning an array
+  #              of results, we will return another XML::Element object with
+  #              the same name and attributes as the original, but with only
+  #              the matching nodes.
+  #
   method elements (*%query) 
   {
     my @elements;
@@ -525,7 +530,8 @@ class XML::Element does XML::Node
         {
           if $key eq 'RECURSE' { next; } # Skip recurse setting.
           if $key eq 'NEST'    { next; } # Skip nesting recurse setting.
-          if $key eq 'SINGLE'  { next; } # Skup single element setting.
+          if $key eq 'SINGLE'  { next; } # Skip single element setting.
+          if $key eq 'OBJECT'  { next; } # Skip object return setting.
           
           if $key eq 'TAG' 
           {
@@ -583,6 +589,7 @@ class XML::Element does XML::Node
         if ( %query<RECURSE> && (%query<NEST> || !$matched ) ) 
         {
           my %opts = %query.clone;
+          %opts<OBJECT> = False;
           %opts<RECURSE> = %query<RECURSE> - 1;
           my $subelements = $node.elements(|%opts);
           if $subelements 
@@ -607,6 +614,16 @@ class XML::Element does XML::Node
     {
       return False;
     }
+    
+    if %query<OBJECT>
+    {
+      my $new = self.new();
+      $new.attribs = self.attribs.clone;
+      $new.name = $.name;
+      $new.idattr = $.idattr;
+      $new.nodes = @elements;
+      return $new;
+    }
     return @elements;
   }
 
@@ -623,12 +640,13 @@ class XML::Element does XML::Node
     return self.elements(|%query);
   }
 
-  method getElementsByTagName ($name)
+  method getElementsByTagName ($name, Bool :$object)
   {
     my %query =
     {
       'RECURSE' => 999,
       'TAG'     => $name,
+      'OBJECT'  => $object,
     };
     return self.elements(|%query);
   }

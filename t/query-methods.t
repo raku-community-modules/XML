@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 18;
+plan 24;
 
 my $text = slurp('./t/query.xml');
 
@@ -66,4 +66,15 @@ is $byid.attribs<name>, 'first', 'custom idattr returns proper element.';
 my $parent = $byid.parent;
 
 is $parent.name, 'bullocks', 'parent returns proper item.';
+
+@items = $xml.getElementsByTagName('item');
+is @items.elems, 2, 'getElementsByTagName returned proper number.';
+is @items[0]<name>, 'first', 'getElementsByTagName returned proper values.';
+
+my $subxml = $xml.getElementsByTagName('item', :object);
+ok $subxml ~~ XML::Element, 'object query returns XML::Element';
+is $subxml.nodes.elems, 2, 'object query returned proper number of elements';
+is $subxml.name, 'test', 'object query used proper tag name.';
+is $subxml, '<test><item name="first"/><item name="second"/></test>',
+  'object query returned proper XML output.';
 
