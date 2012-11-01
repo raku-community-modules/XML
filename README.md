@@ -1,8 +1,8 @@
-# Exemel: An Object-Oriented XML Framework for Perl 6
+# An Object-Oriented XML Framework for Perl 6
 
 ## Introduction
 
-Exemel is a full fledged XML library for Perl 6.
+XML (originally called Exemel) is a full fledged XML library for Perl 6.
 
 It handles parsing, generating, manipulating and querying XML.
 It supports element queries, parent element information, namespaces,
@@ -491,7 +491,7 @@ Timothy Totten, supernovus on #perl6, https://github.com/supernovus/
 The XML::Grammar library was originally based on the now defunct
 [XML::Grammar::Document](http://github.com/krunen/xml) library,
 but modified to work with Rakudo 'ng' and later 'nom', 
-with other changes specific to the Exemel model.
+with other changes specific to this library.
 
 ## License
 
