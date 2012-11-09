@@ -343,13 +343,65 @@ Specify a query of named parameters. Special processing parameters are used:
    we will return a XML::Element object with the same name as the original
    input object, with its nodes set to the matched elements.
 
+ * POS
+
+   If set to an Int, the element must be the nth child to match.
+   If set to a Range, the element's position must be within the range.
+   If set to a Whatever match rule (e.g. * > 2) the rule must match.
+
+   If this is set to an Int, and RECURSE is not a positive value, then
+   the SINGLE rule will be set to True.
+
+ * NOTPOS
+
+   Set to an Int, then we match if the element is not the nth child.
+
+ * FIRST
+
+   Match only if the element is the first child.
+
+   If RECURSE is not a positive value, then SINGLE will be set to True.
+
+ * !FIRST
+
+   Don't include the first child in the results.
+
+ * LAST
+
+   Match only if the element is the last child.
+
+   If RECURSE is not a positive value, then SINGLE will be set to True.
+
+ * !LAST
+
+   Don't include the last child in the results.
+
+ * EVEN
+
+   Match even child nodes. By default this is based on natural position
+   (i.e. the second child element is even) see BYINDEX for details.
+
+ * ODD
+
+   Match odd child nodes. By default this is based on natural position
+   (i.e. the first child element is odd) see BYINDEX for details.
+
+ * BYINDEX
+
+   If set to True, then the EVEN and ODD rules match against the array index
+   value rather than the natural position. Therefore, the first element will
+   be even, since it is in position 0.
+
 Any other named paramters not in the above list, will be assumed to be
-attributes that must match.
+attributes that must match. You can match by value, regular expression, or
+whatever code matches.
 
 ```perl
 
   my $head = $html.elements(:TAG<head>, :SINGLE);
   my @stylesheets = $head.elements(:TAG<link>, :rel<stylesheet>);
+  my @middle = $table.elements(:!FIRST, :!LAST);
+  my @not-red = $div.elements(:class(* ne 'red'));
 
 ```
 

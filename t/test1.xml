@@ -1,0 +1,17 @@
+<test>
+  <upper id="one">
+    <lower class="odd" id="one.1" />
+    <lower class="even" id="one.2" />
+    <lower class="odd" id="one.3" />
+  </upper>
+  <upper id="two" class="flagged">
+    <lower class="odd" id="two.1" />
+    <lower class="even" id="two.2" />
+    <lower class="odd" id="two.3" />
+    <lower class="even" id="two.4" />
+  </upper>
+  <upper id="three">
+    <lower class="odd" id="three.1" />
+    <lower class="even" id="three.2" />
+  </upper>
+</test>

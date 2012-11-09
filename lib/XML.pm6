@@ -514,13 +514,42 @@ class XML::Element does XML::Node
   #              an empty array.
   #
   #    OBJECT    If set to a positive value, instead of returning an array
-  #              of results, we will return another XML::Element object with
-  #              the same name and attributes as the original, but with only
-  #              the matching nodes.
+  #              of results, we will return a new XML::Element object with
+  #              the same name the original, containing the matching nodes.
+  #
+  #    POS       Set to an integer, the element must be the nth child.
+  #              If recurse is 0, or at max level, this forces SINGLE to True.
+  #
+  #    NOTPOS    The element is not the nth child.
+  #
+  #    FIRST     The element is the first child. The same rules apply as POS.
+  #
+  #    LAST      The element is the last child. The same rules apply as POS.
+  #
+  #    EVEN      The element is an even child.
+  #
+  #    ODD       The element is an odd child.
+  #
+  #    BYINDEX   If set to a True value, EVEN and ODD will be based on the
+  #              position index (starts with 0) rather than the user idea of
+  #              odd and even elements (starting with 1.)
   #
   method elements (*%query) 
   {
+    my $recurse = 0;
+    my $nest    = False;
+    my $single  = False;
+    my $object  = False;
+    my $byindex = False;
     my @elements;
+    my $nodepos = 0;
+
+    if %query.exists('RECURSE') { $recurse = %query<RECURSE>; }
+    if %query.exists('NEST')    { $nest    = %query<NEST>;    }
+    if %query.exists('SINGLE')  { $single  = %query<SINGLE>;  }
+    if %query.exists('OBJECT')  { $object  = %query<OBJECT>;  }
+    if %query.exists('BYINDEX') { $byindex = %query<BYINDEX>; }
+
     for @.nodes -> $node 
     {
       if $node ~~ XML::Element 
@@ -528,12 +557,77 @@ class XML::Element does XML::Node
         my $matched = True;
         for %query.kv -> $key, $val 
         {
-          if $key eq 'RECURSE' { next; } # Skip recurse setting.
-          if $key eq 'NEST'    { next; } # Skip nesting recurse setting.
-          if $key eq 'SINGLE'  { next; } # Skip single element setting.
-          if $key eq 'OBJECT'  { next; } # Skip object return setting.
-          
-          if $key eq 'TAG' 
+          if $key eq 'RECURSE' | 'NEST' | 'SINGLE' | 'OBJECT' | 'BYINDEX'
+          {
+            next;
+          }
+          elsif $key eq 'POS' | 'NOTPOS' | 'FIRST' | 'LAST'
+          {
+            my $want-atpos;
+            my $pos;
+            my $last = @.nodes.end;
+            
+            my $one = False;
+
+            given $key
+            {
+              when 'POS'    
+              { 
+                $want-atpos = True;
+                $pos = $val;
+                if $pos ~~ Int { $one = True; }
+              }
+              when 'NOTPOS' 
+              { 
+                $want-atpos = False;
+                $pos = $val;
+              }
+              when 'FIRST'  
+              { 
+                $want-atpos = $val;
+                $pos = 0;
+                if $val { $one = True; }
+              }
+              when 'LAST' 
+              { 
+                $want-atpos = $val;
+                $pos = $last;
+                if $val { $one = True; }
+              }
+            }
+
+            if 
+            (
+              ( $want-atpos && $nodepos !~~ $pos )
+              ||
+              ( ! $want-atpos && $nodepos ~~ $pos )
+            )
+            {
+              $matched = False; 
+              if $one && ! $recurse
+              { 
+                $single = True; 
+              }
+              last; 
+            }
+          }
+          elsif $key eq 'EVEN' | 'ODD'
+          {
+            my $pos = $nodepos;
+            if ! $byindex { $pos++; }
+            my $want-even;
+            if $key eq 'EVEN'
+            {
+              $want-even = $val;
+            }
+            else
+            {
+              $want-even = $val ?? False !! True;
+            }
+            if $want-even && $pos % 2 !== 0 { $matched = False; last; }
+            elsif ! $want-even && $pos % 2 == 0 { $matched = False; last; }
+          }
+          elsif $key eq 'TAG' 
           {
             if $node.name !~~ $val { $matched = False; last; }
           }
@@ -577,7 +671,7 @@ class XML::Element does XML::Node
         }
         if $matched 
         {
-          if (%query<SINGLE>) 
+          if $single
           {
             return $node;
           }
@@ -586,11 +680,11 @@ class XML::Element does XML::Node
             @elements.push: $node;
           }
         }
-        if ( %query<RECURSE> && (%query<NEST> || !$matched ) ) 
+        if ( $recurse && ($nest || !$matched ) ) 
         {
           my %opts = %query.clone;
           %opts<OBJECT> = False;
-          %opts<RECURSE> = %query<RECURSE> - 1;
+          %opts<RECURSE> = $recurse - 1;
           my $subelements = $node.elements(|%opts);
           if $subelements 
           {
@@ -604,21 +698,21 @@ class XML::Element does XML::Node
             }
           }
         }
-        if (%query<SINGLE> && @elements.elems > 0) 
+        if ($single && @elements.elems > 0) 
         {
           return @elements[0];
         }
       }
+      $nodepos++;
     }
-    if (%query<SINGLE>) 
+    if ($single) 
     {
       return False;
     }
     
-    if %query<OBJECT>
+    if $object
     {
       my $new = self.new();
-      $new.attribs = self.attribs.clone;
       $new.name = $.name;
       $new.idattr = $.idattr;
       $new.nodes = @elements;
