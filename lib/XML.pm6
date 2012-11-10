@@ -149,7 +149,7 @@ class XML::Element does XML::Node
   {
     my $clone = self.clone;
     $clone.attribs = $clone.attribs.clone;
-    $clone.nodes = $clone.nodes.clone;
+    $clone.nodes = [];
     loop (my $i=0; $i < $clone.nodes.elems; $i++) 
     {
       if ($clone.nodes[$i] ~~ XML::Node) 
