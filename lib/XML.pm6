@@ -147,19 +147,21 @@ class XML::Element does XML::Node
 
   method cloneNode () 
   {
-    my $clone = self.clone;
-    $clone.attribs = $clone.attribs.clone;
+    my $clone = self.new;
+    $clone.name = $.name;
+    $clone.idattr = $.idattr;
+    $clone.attribs = %.attribs.clone;
     $clone.nodes = [];
-    loop (my $i=0; $i < $clone.nodes.elems; $i++) 
+    loop (my $i=0; $i < @.nodes.elems; $i++) 
     {
-      if ($clone.nodes[$i] ~~ XML::Node) 
+      if (@.nodes[$i] ~~ XML::Node) 
       {
-        $clone.nodes[$i] = $clone.nodes[$i].cloneNode;
+        $clone.nodes[$i] = @.nodes[$i].cloneNode;
         $clone.nodes[$i].parent = $clone;
       }
       else 
       {
-        $clone.nodes[$i] = $clone.nodes[$i].clone;
+        $clone.nodes[$i] = @.nodes[$i].clone;
       }
     }
     return $clone;
@@ -855,13 +857,16 @@ class XML::Element does XML::Node
     {
       $element ~= '>';
       my $lastnode;
-      for @.nodes -> $node {
-#        if (                ## Use this on anything now.
-#          defined $lastnode #&& $lastnode ~~ XML::Text 
-#          && ~$lastnode !~~ /\s+$/ && $node ~~ XML::Text
-#        ) {
-#          $element ~= ' '; ## Add a space.
-#        }
+      for @.nodes -> $node 
+      {
+        if 
+        (                
+          $lastnode.defined
+          && ~$lastnode !~~ /\s+$/ && $node ~~ XML::Text
+        ) 
+        {
+          $element ~= ' '; ## Add a space.
+        }
         $element ~= $node;
         $lastnode = $node;
       }
