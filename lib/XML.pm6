@@ -289,6 +289,10 @@ class XML::Element does XML::Node
       {
         $new.append($what);
       }
+      elsif $what ~~ Capture
+      { ## In the case of a Capture, pass it to craft().
+        $new.append(self.craft(|$what));
+      }
       elsif $what ~~ Str
       {
         my $text = XML::Text.new(:text($what));
@@ -1076,5 +1080,11 @@ module XML
   {
     return XML::Document.load($file);
   }
+
+  sub make-xml (Str $name, *@contents, *%attribs) is export
+  {
+    return XML::Element.craft($name, |@contents, |%attribs);
+  }
+
 }
 

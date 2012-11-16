@@ -39,6 +39,10 @@ Slurp the IO, parse the contents, and return an XML::Document object.
 Return an XML::Document object representing the specified file.
 You will be able to call $xml.save(); to save back to the original file.
 
+#### make-xml(Str $name, ... --> XML::Element)
+
+See the _XML::Element.craft()_ function for details on how this works.
+
 ### XML::Node
 
 A _role_ used by the rest of the XML Node classes.
@@ -173,11 +177,17 @@ Insert an XML::Node at the beginning of our _@.nodes_ list.
 #### insert(Str $name, ...)
 
 Create a new XML::Element with the given name, and insert it to the
-beginning of our nodes list.
+beginning of our nodes list. Uses _craft()_ to build the element.
 
 Any named parameters will be used as attributes, any positional parameters
-will be used as child nodes. If the positional parameters are not XML::Node
-using objects, they will be stringified and included as a new XML::Text node.
+will be used as child nodes. 
+
+Positional parameters can be one of the following:
+
+ * An XML::Node object. Will be added as is.
+ * A String. Will be included as an XML::Text node.
+ * A Capture. Calls _craft()_ using the Capture as the signature.
+ * Anything else, will be stringified, and added as an XML::Text node.
 
 #### append(XML::Node $node)
 
