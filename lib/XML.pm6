@@ -1064,7 +1064,7 @@ class XML::Document does XML::Node
 
 module XML
 {
-  proto from-xml ($) is export {*}
+  proto from-xml ($?, *%) is export {*}
 
   multi from-xml (Str $xml-string)
   {
