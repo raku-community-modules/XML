@@ -733,7 +733,7 @@ class XML::Element does XML::Node
   {
     my %query = 
     {
-      'RECURSE' => 999,      ## don't nest this deep, please?
+      'RECURSE' => Inf,
       'SINGLE'  => True,     ## an id should be unique, first come first serve.
       $.idattr  => $id,      ## the id attribute is configurable.
     };
@@ -744,7 +744,7 @@ class XML::Element does XML::Node
   {
     my %query =
     {
-      'RECURSE' => 999,
+      'RECURSE' => Inf,
       'TAG'     => $name,
       'OBJECT'  => $object,
     };
