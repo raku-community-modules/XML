@@ -207,7 +207,7 @@ class XML::Element does XML::Node
 
   multi method after (XML::Node $existing, XML::Node $new, :$offset=1)
   {
-    self.insert-before($existing, $new, :$offset);
+    self.before($existing, $new, :$offset);
   }
 
   method insertAfter (XML::Node $new, XML::Node $existing)
@@ -267,7 +267,7 @@ class XML::Element does XML::Node
   {
     if $.parent ~~ XML::Element
     {
-      $.parent.insert-before(self, $node);
+      $.parent.before(self, $node);
     }
   }
 
@@ -275,7 +275,7 @@ class XML::Element does XML::Node
   {
     if $.parent ~~ XML::Element
     {
-      $.parent.insert-after(self, $node);
+      $.parent.after(self, $node);
     }
   }
 
@@ -1064,19 +1064,17 @@ class XML::Document does XML::Node
 
 module XML
 {
-  proto from-xml ($) is export {*}
-
-  multi from-xml (Str $xml-string)
+  sub from-xml (Str $xml-string) is export
   {
     return XML::Document.new($xml-string);
   }
 
-  multi from-xml (IO $input)
+  sub from-xml-stream (IO $input) is export
   {
     return XML::Document.new($input.slurp);
   }
 
-  multi from-xml (Str :$file)
+  sub from-xml-file (Str $file) is export
   {
     return XML::Document.load($file);
   }

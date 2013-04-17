@@ -7,7 +7,7 @@ use Test;
 
 plan 3;
 
-my $xml = from-xml(:file<./t/example.xml>);
+my $xml = from-xml-file('./t/example.xml');
 
 is $xml[0]<en> ~ ' ' ~ $xml[0][0], 'hello world', 'first get';
 is $xml[1][2][0], 'Maybe', 'second get';

@@ -7,7 +7,7 @@ use XML;
 
 plan 32;
 
-my $xml = from-xml(:file<./t/test1.xml>);
+my $xml = from-xml-file('./t/test1.xml');
 
 my $two = $xml.elements(:POS(1));
 

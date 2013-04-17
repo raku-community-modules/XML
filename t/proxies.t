@@ -7,9 +7,9 @@ use XML;
 
 plan 7;
 
-my $doc = from-xml(:file<./t/query.xml>);
+my $doc = from-xml-file('./t/query.xml');
 
-ok $doc ~~ XML::Document, 'from-xml with :file works.';
+ok $doc ~~ XML::Document, 'from-xml-file works.';
 
 my $xml = $doc.root;
 

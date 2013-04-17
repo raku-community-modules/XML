@@ -24,17 +24,17 @@ object in a string context.
 
 ### XML
 
-A _module_ that provides a multi-dispatch function called 'from-xml'.
+A _module_ that provides a few simple subroutines.
 
 #### from-xml(Str $string --> XML::Document)
 
 Parse the string as XML, and return an XML::Document object.
 
-#### from-xml(IO $input --> XML::Document)
+#### from-xml-stream(IO $input --> XML::Document)
 
 Slurp the IO, parse the contents, and return an XML::Document object.
 
-#### from-xml(Str :$file --> XML::Document)
+#### from-xml-file(Str $file --> XML::Document)
 
 Return an XML::Document object representing the specified file.
 You will be able to call $xml.save(); to save back to the original file.
@@ -131,7 +131,7 @@ The _$.filename_ property will be set.
 Save the XML back into a file. If the _$filename_ parameter is not passed,
 we use the _$.filename_ property (if it is set, otherwise we return False.)
 
-If the _:copy_ option is specified, we don't re-set the _$.filename_ property.
+If the _:copy_ option is true, we don't re-set the _$.filename_ property.
 
 ### XML::Element [XML::Node]
 
