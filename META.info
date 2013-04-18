@@ -3,5 +3,5 @@
   "version"     : "*",
   "description" : "A full-featured, pure-perl XML library (parsing, manipulation, emitting, queries, etc.)",
   "depends"     : [ ],
-  "source-url"  : "git://github.com/supernovus/exemel.git"
+  "source-url"  : "git://github.com/colomon/exemel.git"
 }
