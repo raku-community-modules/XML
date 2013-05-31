@@ -883,7 +883,7 @@ class XML::Element does XML::Node
     return $element;
   }
 
-  method postcircumfix:<[ ]> ($offset)
+  method at_pos ($offset)
   {
     my $self = self;
     Proxy.new(
@@ -898,7 +898,7 @@ class XML::Element does XML::Node
     );
   }
 
-  method postcircumfix:<{ }> ($offset)
+  method at_key ($offset)
   {
     my $self = self;
     Proxy.new(
@@ -941,12 +941,12 @@ class XML::Document does XML::Node
     return $clone;
   }
 
-  method postcircumfix:<[ ]> ($offset)
+  method at_pos ($offset)
   {
     $.root[$offset];
   }
 
-  method postcircumfix:<{ }> ($offset)
+  method at_key ($offset)
   {
     $.root{$offset};
   }
