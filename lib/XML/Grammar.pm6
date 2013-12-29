@@ -26,7 +26,7 @@ regex doctypedecl {
   '<!DOCTYPE' \s+ <name> $<content>=[.*?] '>'
 }
 
-regex element {
+rule element {
   '<' <name> <attribute>*
   [
   | '/>'

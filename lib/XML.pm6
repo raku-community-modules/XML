@@ -350,7 +350,7 @@ class XML::Element does XML::Node
       }
       else 
       {
-        %.attribs.delete($attrib);
+        %.attribs{$attrib}:delete;
       }
     }
     elsif $value.can('Str')
@@ -370,7 +370,7 @@ class XML::Element does XML::Node
   multi method unset (*@attribs) {
     for @attribs -> $attrib
     {
-      %.attribs.delete($attrib);
+      %.attribs{$attrib}:delete;
     }
   }
 
@@ -381,7 +381,7 @@ class XML::Element does XML::Node
 
   method is-bool (Str $attrib)
   {
-    return %.attribs.exists($attrib) && %.attribs{$attrib} eq $attrib;
+    return %.attribs{$attrib}:exists && %.attribs{$attrib} eq $attrib;
   }
 
   method insert-xml (Str $xml) {
@@ -550,11 +550,11 @@ class XML::Element does XML::Node
     my @elements;
     my $nodepos = 0;
 
-    if %query.exists('RECURSE') { $recurse = %query<RECURSE>; }
-    if %query.exists('NEST')    { $nest    = %query<NEST>;    }
-    if %query.exists('SINGLE')  { $single  = %query<SINGLE>;  }
-    if %query.exists('OBJECT')  { $object  = %query<OBJECT>;  }
-    if %query.exists('BYINDEX') { $byindex = %query<BYINDEX>; }
+    if %query{'RECURSE'}:exists { $recurse = %query<RECURSE>; }
+    if %query{'NEST'}:exists    { $nest    = %query<NEST>;    }
+    if %query{'SINGLE'}:exists  { $single  = %query<SINGLE>;  }
+    if %query{'OBJECT'}:exists  { $object  = %query<OBJECT>;  }
+    if %query{'BYINDEX'}:exists { $byindex = %query<BYINDEX>; }
 
     for @.nodes -> $node 
     {
@@ -659,16 +659,16 @@ class XML::Element does XML::Node
             {
               if $val === True
               {
-                if ! $node.attribs.exists($key) { $matched = False; last; }
+                if $node.attribs{$key}:!exists { $matched = False; last; }
               }
               else
               {
-                if $node.attribs.exists($key) { $matched = False; last; }
+                if $node.attribs{$key}:exists { $matched = False; last; }
               }
             }
             else 
             {
-              if ! $node.attribs.exists($key) || $node.attribs{$key} !~~ $val 
+              if $node.attribs{$key}:!exists || $node.attribs{$key} !~~ $val 
               { 
                 $matched = False; last; 
               }
@@ -774,14 +774,14 @@ class XML::Element does XML::Node
   {
     if ($prefix) 
     {
-      if $.attribs.exists("xmlns:$prefix") 
+      if $.attribs{"xmlns:$prefix"}:exists 
       {
         return $.attribs{"xmlns:$prefix"};
       }
     }
     else 
     {
-      if $.attribs.exists("xmlns") 
+      if $.attribs{"xmlns"}:exists 
       {
         return $.attribs{"xmlns"};
       }
