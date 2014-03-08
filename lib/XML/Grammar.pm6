@@ -20,7 +20,20 @@ rule xmldecl {
 
 token version { 'version' '=' '"' <value> '"' }
 token encoding { 'encoding' '=' '"' <value> '"' }
-token value { <-[\"]>+ }
+
+proto token char {*}
+token char:sym<common> { <!before $*STOPPER | '&'> .+? <?before $*STOPPER | '&'> { make ~$/ } }
+token char:sym<dec> { '&#' $<dec>=[<digit>+] ';' { make $<dec>.Int.chr } }
+token char:sym<hex>{ '&#x' $<hex>=[<xdigit>+] ';' { make :16(~$<hex>).chr } }
+token char:sym<quot> { '&quot;' { make '"' } }
+token char:sym<lt> { '&lt;' { make '<' } }
+token char:sym<gt> { '&gt;' { make '>' } }
+token char:sym<apos> { '&apos;' { make "'" } }
+token char:sym<amp> { '&amp;' { make '&' } }
+token value($*STOPPER = '"') {
+    | <?before $*STOPPER>
+    | <char>+
+}
 
 regex doctypedecl {
   '<!DOCTYPE' \s+ <name> $<content>=[.*?] '>'
@@ -35,7 +48,7 @@ rule element {
 }
 
 rule attribute {
-   <name> '=' '"' $<value>=[.*?] '"' 
+   <name> '=' '"' <value> '"'
 }
 
 rule child {

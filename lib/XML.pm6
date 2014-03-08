@@ -430,7 +430,7 @@ class XML::Element does XML::Node
       for @($node<attribute>) -> $a 
       {
         my $an = ~$a<name>;
-        my $av = ~$a<value>;
+        my $av = $a<value><char>.list>>.ast.join // '';
         %attribs{$an} = $av;
       }
     }
