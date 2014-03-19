@@ -534,7 +534,7 @@ A quick example, for more, see the tests in the 't/' folder.
 ```perl
 use XML;
 
-my $xml = from-xml(:file<test.xml>);
+my $xml = from-xml-file('test.xml');
 
 say $xml[0]<en> ~ $xml[0][0]; ## "hello world"
 say $xml[1][2][0]; ## "Maybe"
