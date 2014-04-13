@@ -642,7 +642,8 @@ class XML::Element does XML::Node
             my $prefix = $val;
             if $key eq 'URI' 
             {
-              $prefix = self.nsPrefix($val);
+              $prefix = $node.nsPrefix($val);
+	      if !$prefix.defined() { $matched = False; last; }
             }
             if $prefix eq ''
             {
@@ -758,12 +759,12 @@ class XML::Element does XML::Node
   {
     for $.attribs.kv -> $key, $val 
     {
-      if $val eq $uri 
+      if $val eq $uri && $key.match(/^xmlns(\:||$) <( .* )>/) 
       {
-        return $key.subst(/^xmlns\:?/, '');
+        return $/;
       }
     }
-    return;
+    return $.parent.isa(XML::Element) ?? $.parent.nsPrefix($uri) !! Nil;
   }
 
   ## A way to look up an XML Namespace Prefix, and find out what URI it has.
@@ -786,7 +787,7 @@ class XML::Element does XML::Node
         return $.attribs{"xmlns"};
       }
     }
-    return;
+    return $.parent.isa(XML::Element) ?? $.parent.nsURI($prefix) !! Nil;
   }
 
   ## A quick way to set a namespace.

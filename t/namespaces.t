@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 13;
+plan 14;
 
 ## This should be in its own test, but for now this will do.
 my $xml = XML::Document.load('./t/namespaces.xml');
@@ -62,3 +62,8 @@ $xml.root.append-xml('<yes:itis>a custom namespace</yes:itis>');
 is @items.elems, 1, 'elements(:URI) returns the corect count.';
 is @items[0].contents, 'a custom namespace', 'elements(:URI) returns the proper element.';
 
+my $nesteduri = '/my/nested/namespace';
+
+@items = $xml.root.elements(:URI($nesteduri), :RECURSE(1), :NEST(1));
+
+is @items.elems, 2, 'elements(:URI) returns the correct count.';
