@@ -3,11 +3,11 @@
   <title>
     The title
   </title>
-  <bullocks>
+  <bullocks ex="http://ns.z47.net/example/2.0">
     <ex:item name="first"/>
     <ex:item name="second"/>
   </bullocks>
-  <nested>
+  <nested xmlns="/my/nested/namespace">
     Nothing to see here, move along.
     <item>A nested item, oh boy.</item>
     With more text after it, hurray.

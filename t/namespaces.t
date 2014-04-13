@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 13;
+plan 15;
 
 ## This should be in its own test, but for now this will do.
 my $xml = XML::Document.load('./t/namespaces.xml');
@@ -21,6 +21,9 @@ my @items = $xml.root.elements(:NS($myns), :RECURSE(1));
 
 is @items.elems, 2, 'elements(:NS) returns correct number.';
 is @items[0].attribs<name>, 'first', 'elements(:NS) returns proper data.';
+
+my @newitems = $xml.root.elements(:URI<http://ns.z4y.net/example/1.0>, :RECURSE(1));
+is @newitems, @items, 'elements(:URI) returns the same data.';
 
 my $parent = @items[0].parent;
 
@@ -62,3 +65,8 @@ $xml.root.append-xml('<yes:itis>a custom namespace</yes:itis>');
 is @items.elems, 1, 'elements(:URI) returns the corect count.';
 is @items[0].contents, 'a custom namespace', 'elements(:URI) returns the proper element.';
 
+my $nesteduri = '/my/nested/namespace';
+
+@items = $xml.root.elements(:URI($nesteduri), :RECURSE(1), :NEST(1));
+
+is @items.elems, 2, 'elements(:URI) returns the correct count.';
