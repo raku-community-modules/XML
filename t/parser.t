@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 9;
+plan 10;
 
 my $text = '<test><title>The title</title><bullocks><item name="first"/><item name="second"/></bullocks></test>';
 
@@ -34,3 +34,6 @@ $text ~~ s/'<bogus value="false"/>'/<bogus\/>/;
 
 is $xml, $head~$text, 'parsed back after unset';
 
+$text = "<elem attr1='foo' attr2='bar'></elem>";
+$xml = from-xml($text);
+is $xml.root.attribs<attr1>, 'foo', 'got single-quoted attribute';

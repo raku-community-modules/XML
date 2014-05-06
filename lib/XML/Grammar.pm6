@@ -48,7 +48,10 @@ rule element {
 }
 
 rule attribute {
-   <name> '=' '"' <value> '"'
+   <name> '=' [
+                | '"' <value> '"'
+                | \' <value "'"> \'
+              ]
 }
 
 rule child {
