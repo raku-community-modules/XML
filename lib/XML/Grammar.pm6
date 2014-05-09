@@ -34,6 +34,10 @@ token value($*STOPPER = '"') {
     | <?before $*STOPPER>
     | <char>+
 }
+token value-sq($*STOPPER = "'") {
+    | <?before $*STOPPER>
+    | <char>+
+}
 
 regex doctypedecl {
   '<!DOCTYPE' \s+ <name> $<content>=[.*?] '>'
@@ -50,7 +54,7 @@ rule element {
 rule attribute {
    <name> '=' [
                 | '"' <value> '"'
-                | \' <value "'"> \'
+                | \' $<value>=<value-sq> \'
               ]
 }
 
