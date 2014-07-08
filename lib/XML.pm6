@@ -733,22 +733,20 @@ class XML::Element does XML::Node
   method getElementById ($id) 
   {
     my %query = 
-    {
       'RECURSE' => Inf,
       'SINGLE'  => True,     ## an id should be unique, first come first serve.
       $.idattr  => $id,      ## the id attribute is configurable.
-    };
+    ;
     return self.elements(|%query);
   }
 
   method getElementsByTagName ($name, Bool :$object)
   {
     my %query =
-    {
       'RECURSE' => Inf,
       'TAG'     => $name,
       'OBJECT'  => $object,
-    };
+    ;
     return self.elements(|%query);
   }
 
