@@ -419,7 +419,7 @@ whatever code matches.
 
 Return the XML::Element with the given id.
 
-#### getElementByTagName($name, :$object?)
+#### getElementsByTagName($name, :$object?)
 
 Return an array of XML::Elements with the given tag name.
 
