@@ -309,6 +309,48 @@ ignored entirely.
 Returns True if the given attribute exists, and has the same value
 as its name (the definition of an XML boolean.)
 
+#### add-values (Str $attrib, Set $values)
+
+For the attribute with the given _$name_, perform the set-wise union, _(|)_, 
+of the set of _$values_ passed to the method and the existing values of the attribute.
+The results are converted back to a string value and stored in the attribute. For example:
+
+```perl
+my $xml = from-xml('<test><folks we = "Al Barb Carl"/></test>');
+say $xml[0]; # <folks we="Al Barb Carl"/>
+
+$xml[0].add-values("we", <Carl Dave Ellie>.Set);
+say $xml[0]; # <folks we="Al Barb Carl Dave Ellie"/>
+```
+
+#### delete-values (Str $attrib, Set $values)
+
+For the attribute with the given _$name_, perform the set-wise difference, _(-)_, 
+of the  existing values of the attribute and the _$values_ passed to the method.
+The results are converted back to a string value and stored in the attribute. For example:
+
+```perl
+my $xml = from-xml('<test><folks we = "Al Barb Carl Dave Ellie"/></test>');
+say $xml[0]; # <folks we="Al Barb Carl Dave Ellie"/>
+
+$xml[0].delete-values("we", <Al Ellie Zack>.Set);
+say $xml[0]; # <folks we="Barb Carl Dave"/>
+```
+
+#### test-values (Str $attrib, @tests)
+
+For the attribute with the given _$name_, test each value in @tests for membership
+in the set of existing values of the attribute. Returns a hash that has the test values
+as keys and the boolean results of the membership test as values. For example:
+
+```perl
+my $xml = from-xml('<test><folks we = "Barb Carl Dave"/></test>');
+say $xml[0]; # <folks we="Barb Carl Dave"/>
+
+my %test-results = $xml[0].test-values("we", <Al Carl Zack>.Array);
+say %test-results; # "Al" => Bool::False, "Carl" => Bool::True, "Zack" => Bool::False
+```
+
 #### elements()
 
 Return all child XML::Elements.
