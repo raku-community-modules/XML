@@ -13,11 +13,11 @@ ok $doc ~~ XML::Document, 'from-xml-file works.';
 
 my $xml = $doc.root;
 
-is $xml[0][0].string, 'The title', 'Postcircumfix lookup of Text node works.';
-is $xml[1][0]<name>, 'first', 'Postcircumfix lookup of Attribute works.';
+is $xml[1][0].string, 'The title', 'Postcircumfix lookup of Text node works.';
+is $xml[3][1]<name>, 'first', 'Postcircumfix lookup of Attribute works.';
 
-is $doc.nodes[0].nodes[0].string, 'The title', '.nodes on doc works';
-is $doc[1][1]<name>, 'second', 'Postcircumfix [] on doc works.';
+is $doc.nodes[1].nodes[0].string, 'The title', '.nodes on doc works';
+is $doc[3][3]<name>, 'second', 'Postcircumfix [] on doc works.';
 
 $doc<id> = 'default';
 

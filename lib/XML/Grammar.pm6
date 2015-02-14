@@ -43,8 +43,8 @@ regex doctypedecl {
   '<!DOCTYPE' \s+ <name> $<content>=[.*?] '>'
 }
 
-rule element {
-  '<' <name> <attribute>*
+token element {
+  '<' \s* <name> \s* <attribute>*
   [
   | '/>'
   | '>' <child>* '</' $<name> '>'
@@ -58,7 +58,7 @@ rule attribute {
               ]
 }
 
-rule child {
+token child {
   | <element>
   | <cdata>
   | <text=textnode>
@@ -76,4 +76,3 @@ token pident {
   | '-'
 }
 token name { <.pident>+ [ ':' <.pident>+ ]? }
-
