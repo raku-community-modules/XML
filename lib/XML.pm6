@@ -384,6 +384,34 @@ class XML::Element does XML::Node
     return %.attribs{$attrib}:exists && %.attribs{$attrib} eq $attrib;
   }
 
+# ck
+  method add-values (Str $attrib, Set $values) 
+  {
+    my $old_values = %.attribs{$attrib}.split(/\s+/).Set;
+    my $new_values = $old_values (|) $values;
+    %.attribs{$attrib} = $new_values.Str;
+  }
+
+# ck
+  method delete-values (Str $attrib, Set $values) 
+  {
+    my $old_values = %.attribs{$attrib}.split(/\s+/).Set;
+    my $new_values = $old_values (-) $values;
+    %.attribs{$attrib} = $new_values.Str;
+  }
+
+# ck
+  method test-values (Str $attrib, @tests) 
+  {
+    my $values = %.attribs{$attrib}.split(/\s+/).Set;
+    my %result;
+    for @tests -> $test 
+    {
+      %result{$test} = $test (elem) $values;
+    }
+    return %result;
+  }
+
   method insert-xml (Str $xml) {
     my $element = self.new($xml);
     self.insert: $element;
