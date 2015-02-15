@@ -3,12 +3,12 @@
 class XML::Element  { ... }
 class XML::Document { ... }
 
-role XML::Node 
+role XML::Node
 {
   has $.parent is rw;
 
   ## For XML classes, the gist is the stringified form.
-  method gist () 
+  method gist ()
   {
     return self.Str();
   }
@@ -18,7 +18,7 @@ role XML::Node
     if $.parent ~~ XML::Element
     {
       my $pos = $.parent.index-of(* === self);
-      if $pos > 0 
+      if $pos > 0
       {
         return $.parent.nodes[$pos-1];
       }
@@ -80,10 +80,10 @@ role XML::Node
 
 ## XML::CDATA - represents a CDATA section.
 ## Data is preserved "as is ", right from the [ to the ]]>
-class XML::CDATA does XML::Node 
+class XML::CDATA does XML::Node
 {
   has $.data;
-  method Str () 
+  method Str ()
   {
     return '<![CDATA[' ~ $.data ~ ']]>';
   }
@@ -91,10 +91,10 @@ class XML::CDATA does XML::Node
 
 ## XML::Comment - represents a comment.
 ## Data is preserved "as is", right from the <!-- to the -->
-class XML::Comment does XML::Node 
+class XML::Comment does XML::Node
 {
   has $.data;
-  method Str () 
+  method Str ()
   {
     return '<!--' ~ $.data ~ '-->';
   }
@@ -102,7 +102,7 @@ class XML::Comment does XML::Node
 
 ## XML::PI - represents a PI section.
 ## Data is preserved "as is", right from the <? to the ?>
-class XML::PI does XML::Node 
+class XML::PI does XML::Node
 {
   has $.data;
   method Str ()
@@ -116,14 +116,14 @@ class XML::PI does XML::Node
 ## preserved in its original format, including whitespace.
 ## The default stringification removes extra whitespace, and chomps
 ## the string. If this is not what you expect, call .text directly.
-class XML::Text does XML::Node 
+class XML::Text does XML::Node
 {
   has $.text;
-  method Str (:$strip) 
+  method Str (:$strip)
   {
     my $text = $.text;
     $text ~~ s:g/\s+/ /;  ## Relace multiple whitespace with a single space.
-    if $strip 
+    if $strip
     {
         $text ~~ s:g/\s+$//;  ## Chop out trailing spaces.
         $text ~~ s:g/^\s+//;  ## Chop out leading spaces.
@@ -131,13 +131,13 @@ class XML::Text does XML::Node
     $text.=chomp;         ## Remove a trailing newline if it exists.
     return $text;
   }
-  method string () 
+  method string ()
   {
     return self.Str(:strip);
   }
 }
 
-class XML::Element does XML::Node 
+class XML::Element does XML::Node
 {
   use XML::Grammar;
   has $.name    is rw;         ## We may want to change element type.
@@ -145,21 +145,21 @@ class XML::Element does XML::Node
   has %.attribs is rw;         ## Cloning requires rw.
   has $.idattr  is rw = 'id';  ## Default id attribute is, well, 'id'.
 
-  method cloneNode () 
+  method cloneNode ()
   {
     my $clone = self.new;
     $clone.name = $.name;
     $clone.idattr = $.idattr;
     $clone.attribs = %.attribs.clone;
     $clone.nodes = [];
-    loop (my $i=0; $i < @.nodes.elems; $i++) 
+    loop (my $i=0; $i < @.nodes.elems; $i++)
     {
-      if (@.nodes[$i] ~~ XML::Node) 
+      if (@.nodes[$i] ~~ XML::Node)
       {
         $clone.nodes[$i] = @.nodes[$i].cloneNode;
         $clone.nodes[$i].parent = $clone;
       }
-      else 
+      else
       {
         $clone.nodes[$i] = @.nodes[$i].clone;
       }
@@ -167,12 +167,12 @@ class XML::Element does XML::Node
     return $clone;
   }
 
-  multi method insert (XML::Node $node) 
+  multi method insert (XML::Node $node)
   {
     @.nodes.unshift: $node.reparent(self);
   }
 
-  multi method append (XML::Node $node) 
+  multi method append (XML::Node $node)
   {
     @.nodes.push: $node.reparent(self);
   }
@@ -336,19 +336,19 @@ class XML::Element does XML::Node
     self.after($new);
   }
 
-  multi method set (Str $attrib, $value) 
+  multi method set (Str $attrib, $value)
   {
-    if $value ~~ Str|Numeric 
+    if $value ~~ Str|Numeric
     {
       %.attribs{$attrib} = $value;
     }
-    elsif $value ~~ Bool 
+    elsif $value ~~ Bool
     {
-      if $value 
+      if $value
       {
         %.attribs{$attrib} = $attrib;
       }
-      else 
+      else
       {
         %.attribs{$attrib}:delete;
       }
@@ -385,7 +385,7 @@ class XML::Element does XML::Node
   }
 
 # ck
-  method add-values (Str $attrib, Set $values) 
+  method add-values (Str $attrib, Set $values)
   {
     my $old_values = %.attribs{$attrib}.split(/\s+/).Set;
     my $new_values = $old_values (|) $values;
@@ -393,7 +393,7 @@ class XML::Element does XML::Node
   }
 
 # ck
-  method delete-values (Str $attrib, Set $values) 
+  method delete-values (Str $attrib, Set $values)
   {
     my $old_values = %.attribs{$attrib}.split(/\s+/).Set;
     my $new_values = $old_values (-) $values;
@@ -401,11 +401,11 @@ class XML::Element does XML::Node
   }
 
 # ck
-  method test-values (Str $attrib, @tests) 
+  method test-values (Str $attrib, @tests)
   {
     my $values = %.attribs{$attrib}.split(/\s+/).Set;
     my %result;
-    for @tests -> $test 
+    for @tests -> $test
     {
       %result{$test} = $test (elem) $values;
     }
@@ -434,10 +434,10 @@ class XML::Element does XML::Node
     self.after: $element;
   }
 
-  multi method new (Str $xml) 
+  multi method new (Str $xml)
   {
     my $match = XML::Grammar.parse($xml);
-    if ($match) 
+    if ($match)
     {
       return self.parse-node($match<root>);
     }
@@ -447,15 +447,15 @@ class XML::Element does XML::Node
     }
   }
 
-  method parse-node ($node, $mother?) 
+  method parse-node ($node, $mother?)
   {
     my $name = $node<name>.Str;
     my %attribs;
     my @nodes;
 
-    if ($node<attribute>) 
+    if ($node<attribute>)
     {
-      for @($node<attribute>) -> $a 
+      for @($node<attribute>) -> $a
       {
         my $an = ~$a<name>;
         my $av = $a<value><char>.list>>.ast.join // '';
@@ -465,41 +465,41 @@ class XML::Element does XML::Node
 
     my $parent = XML::Element.new(:$name, :%attribs);
 
-    if ($mother) 
+    if ($mother)
     {
       $parent.parent = $mother;
     }
 
-    if ($node<child>) 
+    if ($node<child>)
     {
-      for @($node<child>) -> $c 
+      for @($node<child>) -> $c
       {
         my $child;
-        if ($c<cdata>) 
+        if ($c<cdata>)
         {
           my $data = ~$c<cdata><content>;
           $child = XML::CDATA.new(:$data, :$parent);
         }
-        elsif ($c<comment>) 
+        elsif ($c<comment>)
         {
           my $data = ~$c<comment><content>;
           $child = XML::Comment.new(:$data, :$parent);
         }
-        elsif ($c<pi>) 
+        elsif ($c<pi>)
         {
           my $data = ~$c<pi><content>;
           $child = XML::PI.new(:$data, :$parent);
         }
-        elsif ($c<text>) 
+        elsif ($c<text>)
         {
           my $text = ~$c<text>;
           $child = XML::Text.new(:$text, :$parent);
         }
-        elsif ($c<element>) 
+        elsif ($c<element>)
         {
           $child = self.parse-node($c<element>, $parent);
         }
-        if defined $child 
+        if defined $child
         {
           @nodes.push: $child;
         }
@@ -533,7 +533,7 @@ class XML::Element does XML::Node
   #
   #  There are three other 'special' keys that don't match attributes, but
   #  set rules for the elements query:
-  #   
+  #
   #    RECURSE   If set to a non-zero digit, child elements will also be
   #              searched for elements matching the queries. By default
   #              only non-matching elements will be searched (so only the
@@ -568,7 +568,7 @@ class XML::Element does XML::Node
   #              position index (starts with 0) rather than the user idea of
   #              odd and even elements (starting with 1.)
   #
-  method elements (*%query) 
+  method elements (*%query)
   {
     my $recurse = 0;
     my $nest    = False;
@@ -584,12 +584,12 @@ class XML::Element does XML::Node
     if %query{'OBJECT'}:exists  { $object  = %query<OBJECT>;  }
     if %query{'BYINDEX'}:exists { $byindex = %query<BYINDEX>; }
 
-    for @.nodes -> $node 
+    for @.nodes -> $node
     {
-      if $node ~~ XML::Element 
+      if $node ~~ XML::Element
       {
         my $matched = True;
-        for %query.kv -> $key, $val 
+        for %query.kv -> $key, $val
         {
           if $key eq 'RECURSE' | 'NEST' | 'SINGLE' | 'OBJECT' | 'BYINDEX'
           {
@@ -599,50 +599,50 @@ class XML::Element does XML::Node
           {
             my $want-atpos;
             my $pos;
-            my $last = @.nodes.end;
-            
+            my $last = @.nodes.grep({$_ ~~ XML::Element}).end;
+
             my $one = False;
 
             given $key
             {
-              when 'POS'    
-              { 
+              when 'POS'
+              {
                 $want-atpos = True;
                 $pos = $val;
                 if $pos ~~ Int { $one = True; }
               }
-              when 'NOTPOS' 
-              { 
+              when 'NOTPOS'
+              {
                 $want-atpos = False;
                 $pos = $val;
               }
-              when 'FIRST'  
-              { 
+              when 'FIRST'
+              {
                 $want-atpos = $val;
                 $pos = 0;
                 if $val { $one = True; }
               }
-              when 'LAST' 
-              { 
+              when 'LAST'
+              {
                 $want-atpos = $val;
                 $pos = $last;
                 if $val { $one = True; }
               }
             }
 
-            if 
+            if
             (
               ( $want-atpos && $nodepos !~~ $pos )
               ||
               ( ! $want-atpos && $nodepos ~~ $pos )
             )
             {
-              $matched = False; 
+              $matched = False;
               if $one && ! $recurse
-              { 
-                $single = True; 
+              {
+                $single = True;
               }
-              last; 
+              last;
             }
           }
           elsif $key eq 'EVEN' | 'ODD'
@@ -661,14 +661,14 @@ class XML::Element does XML::Node
             if $want-even && $pos % 2 !== 0 { $matched = False; last; }
             elsif ! $want-even && $pos % 2 == 0 { $matched = False; last; }
           }
-          elsif $key eq 'TAG' 
+          elsif $key eq 'TAG'
           {
             if $node.name !~~ $val { $matched = False; last; }
           }
-          elsif $key eq 'NS' | 'URI' 
+          elsif $key eq 'NS' | 'URI'
           {
             my $prefix = $val;
-            if $key eq 'URI' 
+            if $key eq 'URI'
             {
               $prefix = $node.nsPrefix($val);
 	      if !$prefix.defined() { $matched = False; last; }
@@ -677,12 +677,12 @@ class XML::Element does XML::Node
             {
               if $node.name ~~ / ':' / { $matched = False; last; }
             }
-            else 
+            else
             {
               if $node.name !~~ / ^ $prefix ':' / { $matched = False; last; }
             }
           }
-          else 
+          else
           {
             if $val ~~ Bool
             {
@@ -695,56 +695,56 @@ class XML::Element does XML::Node
                 if $node.attribs{$key}:exists { $matched = False; last; }
               }
             }
-            else 
+            else
             {
-              if $node.attribs{$key}:!exists || $node.attribs{$key} !~~ $val 
-              { 
-                $matched = False; last; 
+              if $node.attribs{$key}:!exists || $node.attribs{$key} !~~ $val
+              {
+                $matched = False; last;
               }
             }
           }
         }
-        if $matched 
+        if $matched
         {
           if $single
           {
             return $node;
           }
-          else 
+          else
           {
             @elements.push: $node;
           }
         }
-        if ( $recurse && ($nest || !$matched ) ) 
+        if ( $recurse && ($nest || !$matched ) )
         {
           my %opts = %query.clone;
           %opts<OBJECT> = False;
           %opts<RECURSE> = $recurse - 1;
           my $subelements = $node.elements(|%opts);
-          if $subelements 
+          if $subelements
           {
-            if $subelements ~~ Array 
+            if $subelements ~~ Array
             {
               @elements.push: |$subelements;
             }
-            else 
+            else
             {
               @elements.push: $subelements;
             }
           }
         }
-        if ($single && @elements.elems > 0) 
+        if ($single && @elements.elems > 0)
         {
           return @elements[0];
         }
+        $nodepos++;
       }
-      $nodepos++;
     }
-    if ($single) 
+    if ($single)
     {
       return False;
     }
-    
+
     if $object
     {
       my $new = self.new();
@@ -758,9 +758,9 @@ class XML::Element does XML::Node
 
   ## Inspired by the DOM. If a matching element is found, it will
   ## return it, otherwise it will return null.
-  method getElementById ($id) 
+  method getElementById ($id)
   {
-    my %query = 
+    my %query =
       'RECURSE' => Inf,
       'SINGLE'  => True,     ## an id should be unique, first come first serve.
       $.idattr  => $id,      ## the id attribute is configurable.
@@ -781,11 +781,11 @@ class XML::Element does XML::Node
   ## A way to look up an XML Namespace URI and find out what prefix it has.
   ## Returns Nil if there is no defined namespace prefix.
   ## Returns '' if the requested URI is the default XML namespace.
-  method nsPrefix ($uri) 
+  method nsPrefix ($uri)
   {
-    for $.attribs.kv -> $key, $val 
+    for $.attribs.kv -> $key, $val
     {
-      if $val eq $uri && $key.match(/^xmlns(\:||$) <( .* )>/) 
+      if $val eq $uri && $key.match(/^xmlns(\:||$) <( .* )>/)
       {
         return $/;
       }
@@ -797,18 +797,18 @@ class XML::Element does XML::Node
   ## Returns Nil if there is no namespace assigned.
   ## Call it without a prefix or with a prefix of '' to find the default
   ## namespace URI.
-  method nsURI ($prefix?) 
+  method nsURI ($prefix?)
   {
-    if ($prefix) 
+    if ($prefix)
     {
-      if $.attribs{"xmlns:$prefix"}:exists 
+      if $.attribs{"xmlns:$prefix"}:exists
       {
         return $.attribs{"xmlns:$prefix"};
       }
     }
-    else 
+    else
     {
-      if $.attribs{"xmlns"}:exists 
+      if $.attribs{"xmlns"}:exists
       {
         return $.attribs{"xmlns"};
       }
@@ -819,11 +819,11 @@ class XML::Element does XML::Node
   ## A quick way to set a namespace.
   method setNamespace ($uri, $prefix?)
   {
-    if ($prefix) 
+    if ($prefix)
     {
       $.attribs{"xmlns:$prefix"} = $uri;
     }
-    else 
+    else
     {
       $.attribs{"xmlns"} = $uri;
     }
@@ -832,12 +832,12 @@ class XML::Element does XML::Node
   # match-type($type)
   #   returns all child elements which are $type objects.
   #
-  method match-type ($type) 
+  method match-type ($type)
   {
     my @elements;
-    for @.nodes -> $node 
+    for @.nodes -> $node
     {
-      if $node ~~ $type 
+      if $node ~~ $type
       {
         @elements.push: $node;
       }
@@ -848,7 +848,7 @@ class XML::Element does XML::Node
   # comments()
   #   returns all child comments.
   #
-  method comments() 
+  method comments()
   {
     self.match-type(XML::Comment);
   }
@@ -856,7 +856,7 @@ class XML::Element does XML::Node
   # cdata()
   #   returns all child CDATA sections.
   #
-  method cdata() 
+  method cdata()
   {
     self.match-type(XML::CDATA);
   }
@@ -864,7 +864,7 @@ class XML::Element does XML::Node
   # instructions()
   #   returns all child PI sections.
   #
-  method instructions() 
+  method instructions()
   {
     self.match-type(XML::PI);
   }
@@ -872,29 +872,29 @@ class XML::Element does XML::Node
   # contents()
   #   returns all child text segments.
   #
-  method contents() 
+  method contents()
   {
     self.match-type(XML::Text);
   }
 
-  method Str() 
+  method Str()
   {
     my $element = '<' ~ $.name;
-    for %.attribs.kv -> $key, $val 
+    for %.attribs.kv -> $key, $val
     {
       $element ~= " $key=\"$val\"";
     }
-    if (@.nodes) 
+    if (@.nodes)
     {
       $element ~= '>';
       my $lastnode;
-      for @.nodes -> $node 
+      for @.nodes -> $node
       {
-        if 
-        (                
+        if
+        (
           $lastnode.defined
           && ~$lastnode !~~ /\s+$/ && $node ~~ XML::Text
-        ) 
+        )
         {
           $element ~= ' '; ## Add a space.
         }
@@ -903,7 +903,7 @@ class XML::Element does XML::Node
       }
       $element ~= '</' ~ $.name ~ '>';
     }
-    else 
+    else
     {
       $element ~= '/>';
     }
@@ -942,7 +942,7 @@ class XML::Element does XML::Node
 
 }
 
-class XML::Document does XML::Node 
+class XML::Document does XML::Node
 {
   use XML::Grammar;
   has $.version = '1.0';
@@ -985,18 +985,18 @@ class XML::Document does XML::Node
     my %doctype;
     my $root;
     my $doc = XML::Grammar.parse($xml);
-    if ($doc) 
+    if ($doc)
     {
       #$*ERR.say: "We parsed the doc";
-      if ($doc<xmldecl>) 
+      if ($doc<xmldecl>)
       {
         $version = ~$doc<xmldecl>[0]<version><value>;
-        if ($doc<xmldecl>[0]<encoding>) 
+        if ($doc<xmldecl>[0]<encoding>)
         {
           $encoding = ~$doc<xmldecl>[0]<encoding>[0]<value>;
         }
       }
-      if ($doc<doctypedecl>) 
+      if ($doc<doctypedecl>)
       {
         %doctype<type> = ~$doc<doctypedecl>[0]<name>;
         %doctype<value> = ~$doc<doctypedecl>[0]<content>;
@@ -1019,15 +1019,15 @@ class XML::Document does XML::Node
     return $this;
   }
 
-  method Str() 
+  method Str()
   {
     my $document = '<?xml version="' ~ $.version ~ '"';
-    if $.encoding 
+    if $.encoding
     {
       $document ~= ' encoding="' ~ $.encoding ~ '"';
     }
     $document ~= '?>';
-    if +%.doctype.keys > 0 
+    if +%.doctype.keys > 0
     {
       $document ~= '<!DOCTYPE ' ~ %.doctype<type> ~ %.doctype<value> ~ '>';
     }
@@ -1043,9 +1043,9 @@ class XML::Document does XML::Node
   ## load() is used instead of new() to create a new object.
   ## e.g.:  my $doc = XML::Document.load("myfile.xml");
   ##
-  method load (Str $filename) 
+  method load (Str $filename)
   {
-    if ($filename.IO ~~ :f) 
+    if ($filename.IO ~~ :f)
     {
       my $text = slurp($filename);
       return self.new($text, :$filename);
@@ -1070,13 +1070,13 @@ class XML::Document does XML::Node
   ## Saves the XML to a new file. Does not override the existing filename,
   ## so future calls to save() will save to the original file, not the new one.
   ##
-  method save (Str $filename?, Bool :$copy) 
+  method save (Str $filename?, Bool :$copy)
   {
     my $fname = $!filename;
-    if ($filename) 
+    if ($filename)
     {
       $fname = $filename;
-      if (!$copy) 
+      if (!$copy)
       {
         $!filename = $filename;
       }
@@ -1112,4 +1112,3 @@ module XML
   }
 
 }
-
