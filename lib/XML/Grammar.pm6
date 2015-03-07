@@ -22,7 +22,13 @@ token version { 'version' '=' '"' <value> '"' }
 token encoding { 'encoding' '=' '"' <value> '"' }
 
 proto token char {*}
-token char:sym<common> { <!before $*STOPPER | '&'> .+? <?before $*STOPPER | '&'> { make ~$/ } }
+token char:sym<common> {
+    (||   [ <?{ $*STOPPER eq '"' }>
+           <!before <["&]>> .+? <?["&]> ]
+    ||   [ <?{ $*STOPPER eq "'" }>
+           <!before <['&]>> .+? <?['&]> ])
+    { make $0 }
+}
 token char:sym<dec> { '&#' $<dec>=[<digit>+] ';' { make $<dec>.Int.chr } }
 token char:sym<hex>{ '&#x' $<hex>=[<xdigit>+] ';' { make :16(~$<hex>).chr } }
 token char:sym<quot> { '&quot;' { make '"' } }
