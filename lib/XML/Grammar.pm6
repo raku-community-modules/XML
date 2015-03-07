@@ -24,10 +24,10 @@ token encoding { 'encoding' '=' '"' <value> '"' }
 proto token char {*}
 token char:sym<common> {
     (||   [ <?{ $*STOPPER eq '"' }>
-           <!before <["&]>> .+? <?["&]> ]
+           <!["&]> .+? <?["&]> ]
     ||   [ <?{ $*STOPPER eq "'" }>
-           <!before <['&]>> .+? <?['&]> ])
-    { make $0 }
+           <!['&]> .+? <?['&]> ])
+           { make ~$/ }
 }
 token char:sym<dec> { '&#' $<dec>=[<digit>+] ';' { make $<dec>.Int.chr } }
 token char:sym<hex>{ '&#x' $<hex>=[<xdigit>+] ';' { make :16(~$<hex>).chr } }
