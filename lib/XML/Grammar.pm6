@@ -18,11 +18,17 @@ rule xmldecl {
    '?>'
 }
 
-token version { 'version' '=' '"' <value> '"' }
-token encoding { 'encoding' '=' '"' <value> '"' }
+token version { 'version' '=' <value> }
+token encoding { 'encoding' '=' <value> }
 
 proto token char {*}
-token char:sym<common> { <!before $*STOPPER | '&'> .+? <?before $*STOPPER | '&'> { make ~$/ } }
+token char:sym<common> {
+    (||   [ <?{ $*STOPPER eq '"' }>
+           <!["&]> .+? <?["&]> ]
+    ||   [ <?{ $*STOPPER eq "'" }>
+           <!['&]> .+? <?['&]> ])
+           { make ~$/ }
+}
 token char:sym<dec> { '&#' $<dec>=[<digit>+] ';' { make $<dec>.Int.chr } }
 token char:sym<hex>{ '&#x' $<hex>=[<xdigit>+] ';' { make :16(~$<hex>).chr } }
 token char:sym<quot> { '&quot;' { make '"' } }
@@ -31,12 +37,18 @@ token char:sym<gt> { '&gt;' { make '>' } }
 token char:sym<apos> { '&apos;' { make "'" } }
 token char:sym<amp> { '&amp;' { make '&' } }
 token value($*STOPPER = '"') {
-    | <?before $*STOPPER>
-    | <char>+
+    \"
+    [
+    | \"
+    | <char>+ \"
+    ]
 }
 token value-sq($*STOPPER = "'") {
-    | <?before $*STOPPER>
-    | <char>+
+    \'
+    [
+    | \'
+    | <char>+ \'
+    ]
 }
 
 regex doctypedecl {
@@ -53,8 +65,8 @@ token element {
 
 rule attribute {
    <name> '=' [
-                | '"' <value> '"'
-                | \' $<value>=<value-sq> \'
+                | <value>
+                | $<value>=<value-sq>
               ]
 }
 
