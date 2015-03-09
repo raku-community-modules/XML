@@ -910,7 +910,7 @@ class XML::Element does XML::Node
     return $element;
   }
 
-  method at_pos ($offset)
+  method AT-POS ($offset)
   {
     my $self = self;
     Proxy.new(
@@ -925,7 +925,7 @@ class XML::Element does XML::Node
     );
   }
 
-  method at_key ($offset)
+  method AT-KEY ($offset)
   {
     my $self = self;
     Proxy.new(
@@ -968,12 +968,12 @@ class XML::Document does XML::Node
     return $clone;
   }
 
-  method at_pos ($offset)
+  method AT-POS ($offset)
   {
     $.root[$offset];
   }
 
-  method at_key ($offset)
+  method AT-KEY ($offset)
   {
     $.root{$offset};
   }
