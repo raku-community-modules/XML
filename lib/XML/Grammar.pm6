@@ -1,4 +1,4 @@
-grammar XML::Grammar;
+unit grammar XML::Grammar;
 
 rule TOP {
   ^

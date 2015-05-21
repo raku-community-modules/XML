@@ -990,16 +990,16 @@ class XML::Document does XML::Node
       #$*ERR.say: "We parsed the doc";
       if ($doc<xmldecl>)
       {
-        $version = ~$doc<xmldecl>[0]<version><value>;
-        if ($doc<xmldecl>[0]<encoding>)
+        $version = ~$doc<xmldecl><version><value>;
+        if ($doc<xmldecl><encoding>)
         {
-          $encoding = ~$doc<xmldecl>[0]<encoding>[0]<value>;
+          $encoding = ~$doc<xmldecl><encoding><value>;
         }
       }
       if ($doc<doctypedecl>)
       {
-        %doctype<type> = ~$doc<doctypedecl>[0]<name>;
-        %doctype<value> = ~$doc<doctypedecl>[0]<content>;
+        %doctype<type> = ~$doc<doctypedecl><name>;
+        %doctype<value> = ~$doc<doctypedecl><content>;
       }
       $root = XML::Element.parse-node($doc<root>);
       my $this = self.new(:$version, :$encoding, :%doctype, :$root, :$filename);
