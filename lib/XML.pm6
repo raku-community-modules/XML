@@ -8,7 +8,7 @@ role XML::Node
   has $.parent is rw;
 
   ## For XML classes, the gist is the stringified form.
-  method gist ()
+  multi method gist (XML::Node:D:)
   {
     return self.Str();
   }
