@@ -887,19 +887,19 @@ class XML::Element does XML::Node
     if (@.nodes)
     {
       $element ~= '>';
-      my $lastnode;
+      my $prev-node-string;
       for @.nodes -> $node
       {
         if
         (
-          $lastnode.defined
-          && ~$lastnode !~~ /\s+$/ && $node ~~ XML::Text
+          $prev-node-string.defined
+          && $prev-node-string !~~ /\s+$/ && $node ~~ XML::Text
         )
         {
           $element ~= ' '; ## Add a space.
         }
-        $element ~= $node;
-        $lastnode = $node;
+        $prev-node-string  = ~$node;
+        $element          ~= $prev-node-string;
       }
       $element ~= '</' ~ $.name ~ '>';
     }
