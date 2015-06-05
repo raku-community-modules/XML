@@ -1,9 +1,30 @@
-branches:
-  except:
-    - gh-pages
-language: c
+language: perl
+perl:
+    - '5.20'
+env:
+    - BACKEND=moar
+    - BACKEND=jvm
+matrix:
+    allow_failures:
+        - env: BACKEND=jvm
 before_install:
-  - git clone https://github.com/szabgab/perl6-travis-ci.git ../perl6-travis-ci
-  - ../perl6-travis-ci/install_rakudo.sh
+    - git config --global user.email $HOSTNAME":not-for-mail@travis-ci.org"
+    # helpers $(test-jobs) and $(test-files)
+    - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+    - source ~/travis-perl-helpers/init
+    - git clone https://github.com/tadzik/rakudobrew ~/.rakudobrew
+    - export PATH=~/.rakudobrew/bin:$PATH
+    - rakudobrew build $BACKEND
+    - perl6 -v
+install:
+    # must do *something* in the install phase
+    - rakudobrew build-panda
 script:
-  - ../perl6-travis-ci/run_tests.sh
+    # Pull in the dependencies before running tests
+    - panda installdeps .
+    # tests that module passes tests *before* compile
+    - prove -v -s -j$(test-jobs) -e "perl6 --ll-exception -Ilib" $(test-files)
+    # runs tests again, but catches some heisenbugs (mostly with precompiled modules)
+    - PANDA_SUBMIT_TESTREPORTS=1 panda install .
+after_success:
+    - panda list --installed --verbose
