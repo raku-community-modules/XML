@@ -1,6 +1,6 @@
 # An Object-Oriented XML Framework for Perl 6
 
-[![Build Status](https://travis-ci.org/supernovus/Template-Anti.svg?branch=master)](https://travis-ci.org/supernovus/Template-Anti)
+[![Build Status](https://travis-ci.org/supernovus/exemel.svg?branch=master)](https://travis-ci.org/supernovus/exemel)
 
 ## Introduction
 
