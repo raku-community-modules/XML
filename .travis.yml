@@ -4,7 +4,3 @@ perl6:
     - 2015.06
     - 2015.05
 
-install:
-    - rakudobrew build-panda
-    - panda install XML
-
