@@ -991,9 +991,13 @@ class XML::Document does XML::Node
       if ($doc<xmldecl>)
       {
         $version = ~$doc<xmldecl><version><value>;
+        $version ~~ s:g/\"//;		## get rid of any quotes in the version
+        $version ~~ s:g/\'//;
         if ($doc<xmldecl><encoding>)
         {
           $encoding = ~$doc<xmldecl><encoding><value>;
+	  $encoding ~~ s:g/\"//;		## get rid of any quotes in the version
+	  $encoding ~~ s:g/\'//;
         }
       }
       if ($doc<doctypedecl>)
