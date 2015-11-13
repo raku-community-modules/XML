@@ -568,6 +568,10 @@ class XML::Element does XML::Node
   #              position index (starts with 0) rather than the user idea of
   #              odd and even elements (starting with 1.)
   #
+  
+  method lookfor(*%query) {
+    return self.elements(:RECURSE, |%query);
+  }
   method elements (*%query)
   {
     my $recurse = 0;
@@ -952,7 +956,7 @@ class XML::Document does XML::Node
   has $.encoding;
   has %.doctype;
   has $.root handles <
-    attribs nodes elements getElementById getElementsByTagName
+    attribs nodes elements lookfor getElementById getElementsByTagName
     nsURI nsPrefix setNamespace
     append insert set unset before after
     appendNode insertNode insertBefore insertAfter

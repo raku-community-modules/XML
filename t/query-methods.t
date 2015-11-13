@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 26;
+plan 27;
 
 my $text = slurp('./t/query.xml');
 
@@ -79,5 +79,9 @@ is $subxml, '<test><item name="first"/><item name="second"/></test>',
   'object query returned proper XML output.';
 
 $subxml = $xml.elements(:TAG<a>, :RECURSE, :SINGLE);
-ok $subxml ~~ XML::Element, "found the an element with elements(:TAG<a>,:RECURSE)";
+ok $subxml ~~ XML::Element, "found an element with elements(:TAG<a>,:RECURSE, :SINGLE)";
 ok $subxml.name eq "a", "The returned element is <a>";
+
+$subxml = $xml.lookfor(:TAG<a>, :SINGLE);
+ok $subxml ~~ XML::Element, "found an element with lookfor(:TAG<a>, :SINGLE)";
+

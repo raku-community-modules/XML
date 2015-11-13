@@ -459,6 +459,10 @@ whatever code matches.
 
 ```
 
+#### lookfor(...)
+
+A shortcut for elements(..., :RECURSE)
+
 #### getElementById($id)
 
 Return the XML::Element with the given id.
