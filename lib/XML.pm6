@@ -578,7 +578,10 @@ class XML::Element does XML::Node
     my @elements;
     my $nodepos = 0;
 
-    if %query{'RECURSE'}:exists { $recurse = %query<RECURSE>; }
+    if %query{'RECURSE'}:exists {
+      $recurse = %query<RECURSE> if %query<RECURSE> ne True;
+      $recurse = Inf if %query<RECURSE> eq True;
+    }
     if %query{'NEST'}:exists    { $nest    = %query<NEST>;    }
     if %query{'SINGLE'}:exists  { $single  = %query<SINGLE>;  }
     if %query{'OBJECT'}:exists  { $object  = %query<OBJECT>;  }
