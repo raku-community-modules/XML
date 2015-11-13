@@ -18,8 +18,16 @@ rule xmldecl {
    '?>'
 }
 
-token version { 'version' '=' <value> }
-token encoding { 'encoding' '=' <value> }
+token version { 'version' '=' [
+                | <value>
+                | $<value>=<value-sq>
+              ]
+}
+token encoding { 'encoding' '=' [
+                | <value>
+                | $<value>=<value-sq>
+              ]
+}
 
 proto token char {*}
 token char:sym<common> {
