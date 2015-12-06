@@ -1,6 +1,6 @@
 #!/usr/bin/env perl6
 
-#BEGIN { @*INC.unshift: './lib'; }
+#use lib 'lib';
 
 use Test;
 use XML;
