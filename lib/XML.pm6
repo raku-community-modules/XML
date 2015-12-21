@@ -338,24 +338,23 @@ class XML::Element does XML::Node
 
   multi method set (Str $attrib, $value)
   {
-    if $value ~~ Str|Numeric
-    {
-      %.attribs{$attrib} = $value;
-    }
-    elsif $value ~~ Bool
-    {
-      if $value
-      {
-        %.attribs{$attrib} = $attrib;
+    given $value {
+      when Bool {
+        if $value
+        {
+          %.attribs{$attrib} = $attrib;
+        }
+        else
+        {
+          %.attribs{$attrib}:delete;
+        }
       }
-      else
-      {
-        %.attribs{$attrib}:delete;
+      when Str | Numeric {
+        %.attribs{$attrib} = $value;
       }
-    }
-    elsif $value.can('Str')
-    {
-      %.attribs{$attrib} = $value.Str;
+      when .can('Str') {
+        %.attribs{$attrib} = $value.Str;
+      }
     }
   }
 
