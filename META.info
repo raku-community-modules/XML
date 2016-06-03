@@ -5,6 +5,13 @@
   "depends"     : [ ],
   "provides"    : {
     "XML"          : "lib/XML.pm6",
+    "XML::CDATA"   : "lib/XML/CDATA.pm6",
+    "XML::Comment" : "lib/XML/Comment.pm6",
+    "XML::Document": "lib/XML/Document.pm6",
+    "XML::Element" : "lib/XML/Element.pm6",
+    "XML::Node"    : "lib/XML/Node.pm6",
+    "XML::PI"      : "lib/XML/PI.pm6",
+    "XML::Text"    : "lib/XML/Text.pm6",
     "XML::Grammar" : "lib/XML/Grammar.pm6"
   },
   "source-url"  : "git://github.com/supernovus/exemel.git"
