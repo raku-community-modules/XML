@@ -1,4 +1,5 @@
 use XML::Node;
+use XML::Text;
 
 class XML::Element does XML::Node
 {

@@ -10,7 +10,7 @@ role XML::Node
 
   method previousSibling ()
   {
-    if $.parent ~~ XML::Element
+    if $.parent ~~ ::(q<XML::Element>)
     {
       my $pos = $.parent.index-of(* === self);
       if $pos > 0
@@ -23,7 +23,7 @@ role XML::Node
 
   method nextSibling ()
   {
-    if $.parent ~~ XML::Element
+    if $.parent ~~ ::(q<XML::Element>)
     {
       my $pos = $.parent.index-of(* === self);
       if $pos < $.parent.nodes.end
@@ -36,14 +36,14 @@ role XML::Node
 
   method remove ()
   {
-    if $.parent ~~ XML::Element
+    if $.parent ~~ ::(q<XML::Element>)
     {
       $.parent.removeChild(self);
     }
     return self;
   }
 
-  method reparent (XML::Element $parent)
+  method reparent (::(q<XML::Element>) $parent)
   {
     self.remove;
     $.parent = $parent;
@@ -57,11 +57,11 @@ role XML::Node
 
   method ownerDocument ()
   {
-    if $.parent ~~ XML::Document
+    if $.parent ~~ ::(q<XML::Document>)
     {
       return $.parent;
     }
-    elsif $.parent ~~ XML::Node
+    elsif $.parent ~~ ::(q<XML::Node>)
     {
       return $.parent.ownerDocument;
     }

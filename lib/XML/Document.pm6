@@ -1,8 +1,10 @@
 use XML::Node;
+use XML::Element;
+use XML::Grammar;
+use XML::Text;
 
 class XML::Document does XML::Node
 {
-  use XML::Grammar;
   has $.version = '1.0';
   has $.encoding;
   has %.doctype;
