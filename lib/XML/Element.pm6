@@ -1,5 +1,8 @@
 use XML::Node;
 use XML::Text;
+use XML::Comment;
+use XML::PI;
+use XML::CDATA;
 
 class XML::Element does XML::Node
 {
