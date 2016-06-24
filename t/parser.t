@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 10;
+plan 12;
 
 my $text = '<test><title>The title</title><bullocks><item name="first"/><item name="second"/></bullocks></test>';
 
@@ -37,3 +37,8 @@ is $xml, $head~$text, 'parsed back after unset';
 $text = "<elem attr1='foo' attr2='bar'></elem>";
 $xml = from-xml($text);
 is $xml.root.attribs<attr1>, 'foo', 'got single-quoted attribute';
+
+# Test available identifiers.
+
+lives-ok { from-xml('<foo><bar id1-1paté="bat" /></foo>') }, 'valid attribute name';
+dies-ok  { from-xml('<foo><bar 2d="bar" /></foo>') }, 'invalid attribute name';
