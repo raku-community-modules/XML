@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 12;
+plan 13;
 
 my $text = '<test><title>The title</title><bullocks><item name="first"/><item name="second"/></bullocks></test>';
 
@@ -42,3 +42,7 @@ is $xml.root.attribs<attr1>, 'foo', 'got single-quoted attribute';
 
 lives-ok { from-xml('<foo><bar id1-1paté="bat" /></foo>') }, 'valid attribute name';
 dies-ok  { from-xml('<foo><bar 2d="bar" /></foo>') }, 'invalid attribute name';
+
+my $numdoc = from-xml('<foo><bar-1>baz</bar-1></foo>');
+
+is $numdoc.root[0].name, 'bar-1', 'parsed tag name with number';
