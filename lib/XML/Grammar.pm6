@@ -92,7 +92,6 @@ regex cdata {
 
 token textnode { <-[<]>+ }
 token pident {
-  | <.ident>
-  | '-'
+  <!before \d> [ \d+ <.ident>* || <.ident>+ ]+ % '-'
 }
 token name { <.pident>+ [ ':' <.pident>+ ]? }
