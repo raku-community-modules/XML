@@ -43,7 +43,7 @@ You will be able to call $xml.save(); to save back to the original file.
 
 #### open-xml(Str|IO::Path|IO::Handle $src)
 
-A multi sub that picks the right way to open `$src`. If A `Str` is given it
+A multi sub that picks the right way to open `$src`. If a `Str` is given it
 defaults to a filename. If such file is found it assumes a `Str` containing XML.
 
 #### make-xml(Str $name, ... --> XML::Element)
