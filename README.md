@@ -41,6 +41,11 @@ Slurp the IO, parse the contents, and return an XML::Document object.
 Return an XML::Document object representing the specified file.
 You will be able to call $xml.save(); to save back to the original file.
 
+#### open-xml(Str|IO::Path|IO::Handle $src)
+
+A multi sub that picks the right way to open `$src`. If a `Str` is given it
+defaults to a filename. If such file is found it assumes a `Str` containing XML.
+
 #### make-xml(Str $name, ... --> XML::Element)
 
 See the _XML::Element.craft()_ function for details on how this works.
