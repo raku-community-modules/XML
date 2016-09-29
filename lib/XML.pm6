@@ -11,7 +11,7 @@ module XML
 
   sub from-xml-stream (IO $input) is export
   {
-    return XML::Document.new($input.slurp);
+    return XML::Document.new($input.slurp-rest);
   }
 
   sub from-xml-file (Str $file) is export
