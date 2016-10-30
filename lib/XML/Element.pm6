@@ -544,9 +544,9 @@ class XML::Element does XML::Node
             if $key eq 'URI'
             {
               $prefix = $node.nsPrefix($val);
-          if !$prefix.defined() { $matched = False; last; }
+              if !$prefix.defined() { $matched = False; last; }
             }
-            if $prefix eq ''
+            if $prefix.defined && $prefix eq ''
             {
               if $node.name ~~ / ':' / { $matched = False; last; }
             }
@@ -658,9 +658,9 @@ class XML::Element does XML::Node
   {
     for $.attribs.kv -> $key, $val
     {
-      if $val eq $uri && $key.match(/^xmlns(\:||$) <( .* )>/)
+      if $val eq $uri && $key.match(/^xmlns(\:||$) <( .* )>/) -> $prefix
       {
-        return $/;
+        return ~$prefix;
       }
     }
     return $.parent.isa(XML::Element) ?? $.parent.nsPrefix($uri) !! Nil;
