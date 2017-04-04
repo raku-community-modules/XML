@@ -9,7 +9,7 @@ module XML
     return XML::Document.new($xml-string);
   }
 
-  sub from-xml-stream (IO $input) is export
+  sub from-xml-stream (IO::Handle $input) is export
   {
     return XML::Document.new($input.slurp-rest);
   }
