@@ -1,7 +1,7 @@
 {
   "perl"        : "6.*",
   "name"        : "XML",
-  "version"     : "0.0.2",
+  "version"     : "0.0.3",
   "description" : "A full-featured, pure-perl XML library (parsing, manipulation, emitting, queries, etc.)",
   "author"      : "Timothy Totten",
   "depends"     : [ ],
