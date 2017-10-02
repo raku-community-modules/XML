@@ -5,7 +5,7 @@
   "description" : "A full-featured, pure-perl XML library (parsing, manipulation, emitting, queries, etc.)",
   "author"      : "Timothy Totten",
   "license"     : "Artistic-2.0",
-  "depends"     : [ ],
+  "depends"     : [ "HTML::Escape" ],
   "provides"    : {
     "XML"          : "lib/XML.pm6",
     "XML::CDATA"   : "lib/XML/CDATA.pm6",
