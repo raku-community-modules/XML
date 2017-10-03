@@ -4,6 +4,8 @@ use XML::Comment;
 use XML::PI;
 use XML::CDATA;
 
+use HTML::Escape;
+
 class XML::Element does XML::Node
 {
   use XML::Grammar;
@@ -755,7 +757,8 @@ class XML::Element does XML::Node
     my $element = '<' ~ $.name;
     for %.attribs.kv -> $key, $val
     {
-      $element ~= " $key=\"$val\"";
+      my Str:D $val_escaped = escape-html($val);
+      $element ~= " $key=\"$val_escaped\"";
     }
     if (@.nodes)
     {
