@@ -1,6 +1,10 @@
 language: perl6
 perl6:
     - latest
-    - 2015.06
-    - 2015.05
+    - 2017.01
+    - 2016.01
+
+install:
+    - rakudobrew build-zef
+    - zef update && zef install HTML::Escape
 
