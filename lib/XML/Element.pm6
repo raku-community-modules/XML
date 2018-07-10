@@ -786,7 +786,7 @@ class XML::Element does XML::Node
     return $element;
   }
 
-  method AT-POS ($offset)
+  method AT-POS ($offset) is rw
   {
     my $self = self;
     Proxy.new(
@@ -801,7 +801,7 @@ class XML::Element does XML::Node
     );
   }
 
-  method AT-KEY ($offset)
+  method AT-KEY ($offset) is rw
   {
     my $self = self;
     Proxy.new(

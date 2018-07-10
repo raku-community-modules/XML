@@ -28,12 +28,12 @@ class XML::Document does XML::Node
     return $clone;
   }
 
-  method AT-POS ($offset)
+  method AT-POS ($offset) is rw
   {
     $.root[$offset];
   }
 
-  method AT-KEY ($offset)
+  method AT-KEY ($offset) is rw
   {
     $.root{$offset};
   }
