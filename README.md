@@ -461,6 +461,7 @@ whatever code matches.
   my @stylesheets = $head.elements(:TAG<link>, :rel<stylesheet>);
   my @middle = $table.elements(:!FIRST, :!LAST);
   my @not-red = $div.elements(:class(* ne 'red'));
+  my @elms-by-class-name = $html.elements(:RECURSE(Inf), :class('your-class-name')); # find all elements by class name
 
 ```
 
