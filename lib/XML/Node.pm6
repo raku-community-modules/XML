@@ -45,7 +45,7 @@ role XML::Node
 
   method reparent (::(q<XML::Element>) $parent)
   {
-    self.remove;
+    self.remove if $.parent.defined;
     $.parent = $parent;
     return self;
   }
