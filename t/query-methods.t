@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 27;
+plan 26;
 
 my $text = slurp('./t/query.xml');
 
@@ -39,7 +39,6 @@ is @items[0].attribs<name>, 'second', 'elements() with query, returns proper dat
 my @text = $xml.nodes[1].contents();
 
 is @text.elems, 1, 'contents() returns correct number.';
-is @text[0], ' The title ', 'contents() returns proper data.';
 is @text[0].string, 'The title', 'contents().string() returns proper data.';
 
 @text = $xml.nodes[5].contents();
@@ -47,7 +46,7 @@ is @text[0].string, 'The title', 'contents().string() returns proper data.';
 is @text.elems, 3, 'contents() with mixed data, returns correct number.';
 is @text[2].string, '.', 'contents() with mixed data, returns proper data.';
 
-is $xml.nodes[5].contents[1], ' Now it works. Bloody ', 'direct query on contents works.';
+is $xml.nodes[5].contents[1].string, 'Now it works. Bloody', 'direct query on contents works.';
 
 my $byid = $xml.getElementById('hi');
 

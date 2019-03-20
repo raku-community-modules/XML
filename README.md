@@ -523,11 +523,19 @@ A Node representing a portion of plain text.
 
 The raw text, with no whitespace chopped out.
 
+## Str(:$decode, :$min, :$strip, :$chomp)
+
+Return the text, with various modifications depending on what was passed.
+If :decode is set, we decode XML entities.
+If :min is set, we replace multiple whitespace characters with a single space.
+If :strip is set, we trim off leading and trailing whitespace.
+If :chomp is set, we remove the trailing newline.
+
 #### string()
 
-Return the $.text, chomping training newline, replacing multiple whitespace
-characters with a single space, and trimming off leading and trailing 
-whitespace characters.
+An alias for Str(:decode, :min, :strip, :chomp); 
+
+Basically, make the text node easier to read for humans.
 
 ### XML::Comment [XML::Node]
 

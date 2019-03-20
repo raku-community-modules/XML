@@ -1,7 +1,7 @@
 {
   "perl"        : "6.*",
   "name"        : "XML",
-  "version"     : "0.0.4",
+  "version"     : "0.1.0",
   "description" : "A full-featured, pure-perl XML library (parsing, manipulation, emitting, queries, etc.)",
   "author"      : "Timothy Totten",
   "license"     : "Artistic-2.0",
@@ -15,7 +15,8 @@
     "XML::Node"    : "lib/XML/Node.pm6",
     "XML::PI"      : "lib/XML/PI.pm6",
     "XML::Text"    : "lib/XML/Text.pm6",
-    "XML::Grammar" : "lib/XML/Grammar.pm6"
+    "XML::Grammar" : "lib/XML/Grammar.pm6",
+    "XML::Entity"  : "lib/XML/Entity.pm6"
   },
   "source-url"  : "git://github.com/supernovus/exemel.git"
 }
