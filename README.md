@@ -523,7 +523,7 @@ A Node representing a portion of plain text.
 
 The raw text, with no whitespace chopped out.
 
-## Str(:$decode, :$min, :$strip, :$chomp)
+#### Str(:$decode, :$min, :$strip, :$chomp)
 
 Return the text, with various modifications depending on what was passed.
 If :decode is set, we decode XML entities.
