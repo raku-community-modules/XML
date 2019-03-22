@@ -9,12 +9,12 @@ use XML::Entity;
 class XML::Text does XML::Node
 {
   has $.text;
-  method Str (:$decode, :$min, :$strip, :$chomp)
+  method Str (XML::Entity :$decode, Bool :$min, Bool :$strip, Bool :$chomp)
   {
     my $text = $.text;
     if $decode
     { ## Decode the entities.
-      $text = decode-xml-entities($text);
+      $text = $decode.decode($text);
     }
     if $min
     { ## Relace multiple whitespace with a single space.
@@ -31,9 +31,9 @@ class XML::Text does XML::Node
     }
     return $text;
   }
-  method string ()
+  method string (XML::Entity $decode=XML::Entity.new)
   {
-    return self.Str(:decode, :min, :strip, :chomp);
+    return self.Str(:$decode, :min, :strip, :chomp);
   }
 }
 
