@@ -3,7 +3,7 @@ unit class XML::Entity;
 ## A class for working with XML entities.
 
 ## A quick sub that uses only the default XML entities.
-sub decode-xml-entities (Str $in, :$numeric=True) is export
+sub decode-xml-entities (Str $in, Bool :$numeric=True) is export
 {
   XML::Entity.new.decode($in, :$numeric);
 }
@@ -12,7 +12,7 @@ has @.entityNames is rw = ['&amp;','&lt;','&gt;','&quot;','&apos;'];
 has @.entityValues is rw = ['&','<','>',q{"},q{'}];
 
 ## Decode registered XML entitites.
-method decode (Str $in, :$numeric=False)
+method decode (Str $in, Bool :$numeric=False)
 {
   my $out = $in.trans(@.entityNames => @.entityValues);
   if ($numeric)
