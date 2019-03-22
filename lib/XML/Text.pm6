@@ -14,7 +14,7 @@ class XML::Text does XML::Node
     my $text = $.text;
     if $decode
     { ## Decode the entities.
-      $text = decode-entities($text);
+      $text = decode-xml-entities($text);
     }
     if $min
     { ## Relace multiple whitespace with a single space.
