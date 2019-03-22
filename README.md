@@ -523,19 +523,21 @@ A Node representing a portion of plain text.
 
 The raw text, with no whitespace chopped out.
 
-#### Str(:$decode, :$min, :$strip, :$chomp)
+#### Str(XML::Entity :$decode, Bool :$min, Bool :$strip, Bool :$chomp)
 
 Return the text, with various modifications depending on what was passed.
-If :decode is set, we decode XML entities.
+If :decode is set, we decode XML entities using the XML::Entity object.
 If :min is set, we replace multiple whitespace characters with a single space.
 If :strip is set, we trim off leading and trailing whitespace.
 If :chomp is set, we remove the trailing newline.
 
-#### string()
+#### string(XML::Entity $decode=XML::Entity.new)
 
-An alias for Str(:decode, :min, :strip, :chomp); 
+An alias for Str(:$decode, :min, :strip, :chomp); 
 
 Basically, make the text node easier to read for humans.
+
+The default $decode value is a new instance of XML::Entity.
 
 ### XML::Comment [XML::Node]
 
