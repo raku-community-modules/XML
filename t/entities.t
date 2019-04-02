@@ -4,7 +4,7 @@ use XML;
 use XML::Entity;
 use Test;
 
-plan 3;
+plan 4;
 
 my $raw = 'A text node with &lt;entities&gt; &amp; stuff &quot;';
 my $decoded = 'A text node with <entities> & stuff "';
@@ -16,4 +16,7 @@ is $textNode.string, $decoded, 'Text.string is correct';
 
 my $out = decode-xml-entities($raw);
 is $out, $decoded, 'decode-xml-entities works';
+
+my $reinc = encode-xml-entities($out);
+is $reinc, $raw, 'encode-xml-entities works';
 

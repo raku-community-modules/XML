@@ -523,17 +523,18 @@ A Node representing a portion of plain text.
 
 The raw text, with no whitespace chopped out.
 
-#### Str(XML::Entity :$decode, Bool :$min, Bool :$strip, Bool :$chomp)
+#### Str(XML::Entity :$decode, Bool :$min, Bool :$strip, Bool :$chomp, Bool :numeric)
 
 Return the text, with various modifications depending on what was passed.
 If :decode is set, we decode XML entities using the XML::Entity object.
 If :min is set, we replace multiple whitespace characters with a single space.
 If :strip is set, we trim off leading and trailing whitespace.
 If :chomp is set, we remove the trailing newline.
+The :numeric value is passed to the decoder specified in :decode.
 
 #### string(XML::Entity $decode=XML::Entity.new)
 
-An alias for Str(:$decode, :min, :strip, :chomp); 
+An alias for Str(:$decode, :min, :strip, :chomp, :numeric); 
 
 Basically, make the text node easier to read for humans.
 
@@ -574,6 +575,28 @@ Represents an XML CDATA structure.
 #### $.data
 
 Contains the string text of the CDATA.
+
+### XML::Entity
+
+#### decode(Str $input, Bool :$numeric)
+
+Decode XML entities found in the string.
+
+#### encode(Str $input, Bool :$hex, ...)
+
+Encode known XML entities, plus any numeric values passed as extra parameters.
+Any additional parameters should be the regular base10 integer values of the
+additional characters that should be encoded.
+
+If :hex is true we encode using hexidecimal entities instead of decimal.
+
+#### add (Str $name, Str $value)
+
+Add a new custom entity named $name with the replacement value $value.
+
+#### add (Pair $pair)
+
+An alias for self.add($pair.key, $pair.value);
 
 ## Examples
 

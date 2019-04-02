@@ -32,18 +32,11 @@ token encoding { 'encoding' '=' [
 proto token char {*}
 token char:sym<common> {
     (||   [ <?{ $*STOPPER eq '"' }>
-           <!["&]> .+? <?["&]> ]
+           <!["]> .+? <?["]> ]
     ||   [ <?{ $*STOPPER eq "'" }>
-           <!['&]> .+? <?['&]> ])
+           <![']> .+? <?[']> ])
            { make ~$/ }
 }
-token char:sym<dec> { '&#' $<dec>=[<digit>+] ';' { make $<dec>.Int.chr } }
-token char:sym<hex>{ '&#x' $<hex>=[<xdigit>+] ';' { make :16(~$<hex>).chr } }
-token char:sym<quot> { '&quot;' { make '"' } }
-token char:sym<lt> { '&lt;' { make '<' } }
-token char:sym<gt> { '&gt;' { make '>' } }
-token char:sym<apos> { '&apos;' { make "'" } }
-token char:sym<amp> { '&amp;' { make '&' } }
 token value($*STOPPER = '"') {
     \"
     [
