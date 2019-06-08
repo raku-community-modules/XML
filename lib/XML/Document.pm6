@@ -109,15 +109,8 @@ class XML::Document does XML::Node
   ##
   method load (Str $filename)
   {
-    if ($filename.IO ~~ :f)
-    {
-      my $text = slurp($filename);
-      return self.new($text, :$filename);
-    }
-    else
-    {
-      die "File '$filename' does not exist.";
-    }
+    my $text = $filename.IO.slurp.Str;
+    return self.new($text, :$filename);
   }
 
   ## save() is used on an instance. It has three forms.
