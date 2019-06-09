@@ -129,19 +129,12 @@ class XML::Document does XML::Node
   ##
   method save (Str $filename?, Bool :$copy)
   {
-    my $fname = $!filename;
-    if ($filename)
+    my $fname = $filename || $!filename;
+    if (!$copy)
     {
-      $fname = $filename;
-      if (!$copy)
-      {
-        $!filename = $filename;
-      }
+      $!filename = $fname;
     }
-    if (!$fname) { return False; }
-    my $file = open $filename, :w;
-    $file.say: self;
-    $file.close;
+    $fname.IO.spurt: self.Str;
   }
 
 }
