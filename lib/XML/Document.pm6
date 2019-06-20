@@ -109,15 +109,8 @@ class XML::Document does XML::Node
   ##
   method load (Str $filename)
   {
-    if ($filename.IO ~~ :f)
-    {
-      my $text = slurp($filename);
-      return self.new($text, :$filename);
-    }
-    else
-    {
-      die "File '$filename' does not exist.";
-    }
+    my $text = $filename.IO.slurp.Str;
+    return self.new($text, :$filename);
   }
 
   ## save() is used on an instance. It has three forms.
@@ -136,19 +129,12 @@ class XML::Document does XML::Node
   ##
   method save (Str $filename?, Bool :$copy)
   {
-    my $fname = $!filename;
-    if ($filename)
+    my $fname = $filename || $!filename;
+    if (!$copy)
     {
-      $fname = $filename;
-      if (!$copy)
-      {
-        $!filename = $filename;
-      }
+      $!filename = $fname;
     }
-    if (!$fname) { return False; }
-    my $file = open $filename, :w;
-    $file.say: self;
-    $file.close;
+    $fname.IO.spurt: self.Str;
   }
 
 }
