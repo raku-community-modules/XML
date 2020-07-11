@@ -72,9 +72,9 @@ class XML::Element does XML::Node
     return $new;
   }
 
-  multi method after (XML::Node $existing, XML::Node $new, :$offset=1)
+  multi method after (XML::Node $existing, XML::Node $new, :$offset=0)
   {
-    self.before($existing, $new, :$offset);
+    self.before($existing, $new, :offset($offset + 1));
   }
 
   method insertAfter (XML::Node $new, XML::Node $existing)
