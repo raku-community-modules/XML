@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 13;
+plan 14;
 
 my $text = '<test><title>The title</title><bullocks><item name="first"/><item name="second"/></bullocks></test>';
 
@@ -40,6 +40,7 @@ is $xml.root.attribs<attr1>, 'foo', 'got single-quoted attribute';
 
 # Test available identifiers.
 
+lives-ok { from-xml('<name_contain.periods>some text</name_contain.periods>') }, 'valid tag name';
 lives-ok { from-xml('<foo><bar id1-1paté="bat" /></foo>') }, 'valid attribute name';
 dies-ok  { from-xml('<foo><bar 2d="bar" /></foo>') }, 'invalid attribute name';
 
