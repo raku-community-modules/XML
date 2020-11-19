@@ -17,5 +17,5 @@
     "XML::Grammar" : "lib/XML/Grammar.pm6",
     "XML::Entity"  : "lib/XML/Entity.pm6"
   },
-  "source-url"  : "git://github.com/raku-community-modules/raku-xml.git"
+  "source-url"  : "git://github.com/raku-community-modules/XML.git"
 }
