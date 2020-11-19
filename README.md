@@ -1,10 +1,10 @@
-# An Object-Oriented XML Framework for Perl 6
+# An Object-Oriented XML Framework for Raku
 
 [![Build Status](https://travis-ci.org/supernovus/exemel.svg?branch=master)](https://travis-ci.org/supernovus/exemel)
 
 ## Introduction
 
-XML (originally called Exemel) is a full fledged XML library for Perl 6.
+XML (originally called Exemel) is a full fledged XML library for Raku.
 
 It handles parsing, generating, manipulating and querying XML.
 It supports element queries, parent element information, namespaces,
