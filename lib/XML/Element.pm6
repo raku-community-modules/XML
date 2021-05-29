@@ -434,7 +434,7 @@ class XML::Element does XML::Node
   #              position index (starts with 0) rather than the user idea of
   #              odd and even elements (starting with 1.)
   #
-  
+
   method lookfor(*%query) {
     return self.elements(:RECURSE, |%query);
   }
@@ -771,7 +771,7 @@ class XML::Element does XML::Node
         {
           $element ~= ' '; ## Add a space.
         }
-        $prev-node-string  = ~$node;
+        $prev-node-string  = $node.defined ?? $node.Str !! '';
         $element          ~= $prev-node-string;
       }
       $element ~= '</' ~ $.name ~ '>';

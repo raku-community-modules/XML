@@ -1,6 +1,6 @@
 # An Object-Oriented XML Framework for Raku
 
-[![Build Status](https://travis-ci.org/supernovus/exemel.svg?branch=master)](https://travis-ci.org/supernovus/exemel)
+![Build Status](https://github.com/perl-community-modules/XML/workflows/CI/badge.svg)
 
 ## Introduction
 

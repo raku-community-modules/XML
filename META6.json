@@ -1,9 +1,11 @@
 {
   "perl"        : "6.*",
+  "raku"        : "6.*",
   "name"        : "XML",
-  "version"     : "0.3.0",
-  "description" : "A full-featured, pure-perl XML library (parsing, manipulation, emitting, queries, etc.)",
-  "author"      : "Timothy Totten",
+  "auth"        : "github:raku-community-modules",
+  "version"     : "0.3.1",
+  "description" : "A full-featured, pure-Raku XML library (parsing, manipulation, emitting, queries, etc.)",
+  "authors"      : ["Timothy Totten"],
   "license"     : "Artistic-2.0",
   "provides"    : {
     "XML"          : "lib/XML.pm6",
@@ -20,5 +22,6 @@
   "source-url"  : "git://github.com/raku-community-modules/XML.git",
   "tags": [
     "xml"
-  ]
+  ],
+  "meta-version" : 0
 }
