@@ -60,7 +60,7 @@ class XML::Element does XML::Node
   multi method before (XML::Node $existing, XML::Node $new, :$offset=0)
   {
     my $pos = self.index-of(* === $existing) + $offset;
-    if $pos ~~ Int
+    if $pos !eqv False
     {
       @.nodes.splice($pos, 0, $new.reparent(self));
     }
@@ -86,7 +86,7 @@ class XML::Element does XML::Node
   method replaceChild (XML::Node $new, XML::Node $existing)
   {
     my $pos = self.index-of(* === $existing);
-    if $pos ~~ Int
+    if $pos !eqv False
     {
       return @.nodes.splice($pos, 1, $new.reparent(self));
     }
@@ -104,7 +104,7 @@ class XML::Element does XML::Node
   method removeChild (XML::Node $node)
   {
     my $pos = self.index-of(* === $node);
-    if $pos ~~ Int
+    if $pos !eqv False
     {
       return @.nodes.splice($pos, 1);
     }
