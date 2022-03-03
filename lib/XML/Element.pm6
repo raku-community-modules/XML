@@ -462,7 +462,7 @@ class XML::Element does XML::Node
       if $node ~~ XML::Element
       {
         my $matched = True;
-        for %query.kv -> $key, $val
+        for %query.kv -> $key, Mu $val
         {
           if $key eq 'RECURSE' | 'NEST' | 'SINGLE' | 'OBJECT' | 'BYINDEX'
           {
@@ -559,21 +559,11 @@ class XML::Element does XML::Node
           {
             if $val ~~ Bool
             {
-              if $val === True
-              {
-                if $node.attribs{$key}:!exists { $matched = False; last; }
-              }
-              else
-              {
-                if $node.attribs{$key}:exists { $matched = False; last; }
-              }
+              last unless $matched = ($node.attribs{$key}:exists === $val);
             }
             else
             {
-              if $node.attribs{$key}:!exists || $node.attribs{$key} !~~ $val
-              {
-                $matched = False; last;
-              }
+              last unless $matched = ($node.attribs{$key} // Nil) ~~ $val;
             }
           }
         }

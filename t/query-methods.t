@@ -5,7 +5,7 @@
 use Test;
 use XML;
 
-plan 26;
+plan 32;
 
 my $text = slurp('./t/query.xml');
 
@@ -84,3 +84,15 @@ ok $subxml.name eq "a", "The returned element is <a>";
 $subxml = $xml.lookfor(:TAG<a>, :SINGLE);
 ok $subxml ~~ XML::Element, "found an element with lookfor(:TAG<a>, :SINGLE)";
 
+$subxml = $xml.lookfor(:TAG<multi>, :SINGLE);
+@items = $subxml.lookfor(:TAG<option>, :!class);
+is +@items, 1, "found an element with attribute missing";
+is @items[0].attribs<name>, "m2", "no attribute got us proper element";
+
+@items = $subxml.lookfor(:TAG<option>, :class(Nil | "skip"));
+is +@items, 2, "a junction matcher gives us all expected elements";
+is-deeply @items.map(*.attribs<name>).List, <m1 m2>, "only expected elements are given";
+
+@items = $subxml.lookfor(:TAG<option>, :class{ !(.defined && .contains("skip")) });
+is +@items, 2, "a code matcher gives us all expected elements";
+is-deeply @items.map(*.attribs<name>).List, <m2 m3>, "only expected elements are given";
