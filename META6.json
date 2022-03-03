@@ -1,27 +1,37 @@
 {
-  "perl"        : "6.*",
-  "raku"        : "6.*",
-  "name"        : "XML",
-  "auth"        : "github:raku-community-modules",
-  "version"     : "0.3.1",
-  "description" : "A full-featured, pure-Raku XML library (parsing, manipulation, emitting, queries, etc.)",
-  "authors"      : ["Timothy Totten"],
-  "license"     : "Artistic-2.0",
-  "provides"    : {
-    "XML"          : "lib/XML.pm6",
-    "XML::CDATA"   : "lib/XML/CDATA.pm6",
-    "XML::Comment" : "lib/XML/Comment.pm6",
+  "auth": "zef:raku-community-modules",
+  "authors": [
+    "Timothy Totten"
+  ],
+  "build-depends": [
+  ],
+  "depends": [
+  ],
+  "description": "A full-featured, pure-Raku XML library (parsing, manipulation, emitting, queries, etc.)",
+  "license": "Artistic-2.0",
+  "meta-version": 0,
+  "name": "XML",
+  "perl": "6.*",
+  "provides": {
+    "XML": "lib/XML.pm6",
+    "XML::CDATA": "lib/XML/CDATA.pm6",
+    "XML::Comment": "lib/XML/Comment.pm6",
     "XML::Document": "lib/XML/Document.pm6",
-    "XML::Element" : "lib/XML/Element.pm6",
-    "XML::Node"    : "lib/XML/Node.pm6",
-    "XML::PI"      : "lib/XML/PI.pm6",
-    "XML::Text"    : "lib/XML/Text.pm6",
-    "XML::Grammar" : "lib/XML/Grammar.pm6",
-    "XML::Entity"  : "lib/XML/Entity.pm6"
+    "XML::Element": "lib/XML/Element.pm6",
+    "XML::Entity": "lib/XML/Entity.pm6",
+    "XML::Grammar": "lib/XML/Grammar.pm6",
+    "XML::Node": "lib/XML/Node.pm6",
+    "XML::PI": "lib/XML/PI.pm6",
+    "XML::Text": "lib/XML/Text.pm6"
   },
-  "source-url"  : "git://github.com/raku-community-modules/XML.git",
+  "raku": "6.*",
+  "resources": [
+  ],
+  "source-url": "https://github.com/raku-community-modules/XML.git",
   "tags": [
     "xml"
   ],
-  "meta-version" : 0
+  "test-depends": [
+  ],
+  "version": "0.3.1"
 }
