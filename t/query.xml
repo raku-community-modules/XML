@@ -14,4 +14,9 @@
     <a id="hi" href="hello world">hello</a>
     Now it works. Bloody <b>hell</b>.
   </nested>
+  <multi>
+      <option name="m1" class="skip"/>
+      <option name="m2"/>
+      <option name="m3" class="include"/>
+  </multi>
 </test>
