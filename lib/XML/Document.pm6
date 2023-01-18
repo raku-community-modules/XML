@@ -15,7 +15,7 @@ class XML::Document does XML::Node
     appendNode insertNode insertBefore insertAfter
     replaceChild removeChild craft
   >;
-  has $.filename; ## Optional, used for new load() and save() methods.
+  has IO::Path() $.filename; ## Optional, used for new load() and save() methods.
 
   method cloneNode ()
   {
@@ -45,35 +45,29 @@ class XML::Document does XML::Node
     my %doctype;
     my $root;
     my $doc = XML::Grammar.parse($xml);
-    if ($doc)
+    die "could not parse XML" unless $doc;
+    #$*ERR.say: "We parsed the doc";
+    if ($doc<xmldecl>)
     {
-      #$*ERR.say: "We parsed the doc";
-      if ($doc<xmldecl>)
+      $version = ~$doc<xmldecl><version><value>;
+      $version ~~ s:g/\"//;		## get rid of any quotes in the version
+      $version ~~ s:g/\'//;
+      if ($doc<xmldecl><encoding>)
       {
-        $version = ~$doc<xmldecl><version><value>;
-        $version ~~ s:g/\"//;		## get rid of any quotes in the version
-        $version ~~ s:g/\'//;
-        if ($doc<xmldecl><encoding>)
-        {
-          $encoding = ~$doc<xmldecl><encoding><value>;
-	  $encoding ~~ s:g/\"//;		## get rid of any quotes in the version
-	  $encoding ~~ s:g/\'//;
-        }
+        $encoding = ~$doc<xmldecl><encoding><value>;
+  $encoding ~~ s:g/\"//;		## get rid of any quotes in the version
+  $encoding ~~ s:g/\'//;
       }
-      if ($doc<doctypedecl>)
-      {
-        %doctype<type> = ~$doc<doctypedecl><name>;
-        %doctype<value> = ~$doc<doctypedecl><content>;
-      }
-      $root = XML::Element.parse-node($doc<root>);
-      my $this = self.new(:$version, :$encoding, :%doctype, :$root, :$filename);
-      $root.parent = $this;
-      return $this;
     }
-    else
+    if ($doc<doctypedecl>)
     {
-      die "could not parse XML";
+      %doctype<type> = ~$doc<doctypedecl><name>;
+      %doctype<value> = ~$doc<doctypedecl><content>;
     }
+    $root = XML::Element.parse-node($doc<root>);
+    my $this = self.new(:$version, :$encoding, :%doctype, :$root, :$filename);
+    $root.parent = $this;
+    return $this;
   }
 
   multi method new (XML::Element $root)
@@ -107,9 +101,9 @@ class XML::Document does XML::Node
   ## load() is used instead of new() to create a new object.
   ## e.g.:  my $doc = XML::Document.load("myfile.xml");
   ##
-  method load (Str $filename)
+  method load (IO::Path() $filename)
   {
-    my $text = $filename.IO.slurp.Str;
+    my $text = $filename.slurp.Str;
     return self.new($text, :$filename);
   }
 
@@ -127,14 +121,14 @@ class XML::Document does XML::Node
   ## Saves the XML to a new file. Does not override the existing filename,
   ## so future calls to save() will save to the original file, not the new one.
   ##
-  method save (Str $filename?, Bool :$copy)
+  method save (IO::Path() $filename?, Bool :$copy)
   {
-    my $fname = $filename || $!filename;
-    if (!$copy)
+    my $fname = $filename // $!filename;
+    unless ($copy)
     {
       $!filename = $fname;
     }
-    $fname.IO.spurt: self.Str;
+    $fname.spurt: self.Str;
   }
 
 }
