@@ -633,7 +633,7 @@ say $xml[3][9]; ## <item>Never mind</item>
 
 ## Author
 
-Timothy Totten, supernovus on #perl6, https://github.com/supernovus/
+Timothy Totten, supernovus on #raku, https://github.com/supernovus/
 
 ### Note
 
