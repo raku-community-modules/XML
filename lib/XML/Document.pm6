@@ -38,7 +38,7 @@ class XML::Document does XML::Node
     $.root{$offset};
   }
 
-  multi method new (Str $xml, :$filename)
+  multi method new (Str $xml, IO::Path() :$filename)
   {
     my $version = '1.0';
     my $encoding;

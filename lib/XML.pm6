@@ -24,7 +24,7 @@ module XML
     return XML::Element.craft($name, |@contents, |%attribs);
   }
 
-  multi sub open-xml (IO::Path() $src where :e & :!d) is export {
+  multi sub open-xml (IO::Path(Str) $src where :f) is export {
     from-xml-file $src
   }
 
