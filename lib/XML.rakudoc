@@ -1,0 +1,1105 @@
+=begin pod
+=begin head1
+An Object-Oriented XML Framework for Raku
+=end head1
+
+
+=begin head2
+Introduction
+=end head2
+
+=begin para
+XML (originally called Exemel) is a full fledged XML library for Raku.
+=end para
+
+=begin para
+It handles parsing, generating, manipulating and querying XML.
+It supports element queries, parent element information, namespaces,
+and an extendable interface.
+=end para
+
+=begin para
+It supports every major kind of XML Node (XML::Node):
+=end para
+
+=item2 Document (XML::Document)
+=item2 Element (XML::Element)
+=item2 Text (XML::Text)
+=item2 Comment (XML::Comment)
+=item2 PI (XML::PI)
+=item2 CDATA (XML::CDATA)
+
+=begin para
+You can easily serialize the objects back to XML text by using any XML::Node
+object in a string context.
+=end para
+
+=begin head2
+Documentation
+=end head2
+
+=begin head3
+XML
+=end head3
+
+=begin para
+A I<module> that provides a few simple subroutines.
+=end para
+
+=begin head4
+from-xml(Str $string --> XML::Document)
+=end head4
+
+=begin para
+Parse the string as XML, and return an XML::Document object.
+=end para
+
+=begin head4
+from-xml-stream(IO $input --> XML::Document)
+=end head4
+
+=begin para
+Slurp the IO, parse the contents, and return an XML::Document object.
+=end para
+
+=begin head4
+from-xml-file(IO::Path() $file --> XML::Document)
+=end head4
+
+=begin para
+Return an XML::Document object representing the specified file.
+You will be able to call $xml.save(); to save back to the original file.
+=end para
+
+=begin head4
+open-xml(Str|IO::Path|IO::Handle $src)
+=end head4
+
+=begin para
+A multi sub that picks the right way to open C<$src> . If a C<Str> is given it
+defaults to a filename. If such file is found it assumes a C<Str> containing XML.
+=end para
+
+=begin head4
+make-xml(Str $name, ... --> XML::Element)
+=end head4
+
+=begin para
+See the I<XML::Element.craft()> function for details on how this works.
+=end para
+
+=begin head3
+XML::Node
+=end head3
+
+=begin para
+A I<role> used by the rest of the XML Node classes.
+=end para
+
+=begin head4
+$.parent [rw]
+=end head4
+
+=begin para
+The XML::Element or XML::Document to which this Node belongs.
+Only an XML::Document will have an undefined I<$.parent> property.
+=end para
+
+=begin head4
+remove()
+=end head4
+
+=begin para
+Removes the Node from its parent element.
+=end para
+
+=begin head4
+reparent(XML::Element $newparent)
+=end head4
+
+=begin para
+Removes the Node from its existing parent (if any) and sets the
+specified node as its I<$.parent> property.
+=end para
+
+=begin head4
+previousSibling()
+=end head4
+
+=begin para
+Returns the Node that exists in the parent just before this one.
+Returns Nil if there is none.
+=end para
+
+=begin head4
+nextSibling()
+=end head4
+
+=begin para
+Returns the Node that exists in the parent just after this one.
+Returns Nil if there is none.
+=end para
+
+=begin head4
+cloneNode()
+=end head4
+
+=begin para
+This is a polymorphic method that exists in all XML::Node objects,
+and does what is needed to return a clone of the desired Node.
+=end para
+
+=begin head4
+ownerDocument()
+=end head4
+
+=begin para
+Returns the top-level XML::Document that this Node belongs to.
+=end para
+
+=begin head3
+XML::Document [XML::Node]
+=end head3
+
+=begin para
+A Node representing an XML document. You can use array access syntax on it
+to access children of the root node. You can use hash access syntax on it
+to access attributes of the root node.
+=end para
+
+=begin head4
+$.version
+=end head4
+
+=begin para
+The XML version. Default: '1.0'
+=end para
+
+=begin head4
+$.encoding
+=end head4
+
+=begin para
+The text encoding, if specified in the XML declarator.
+=end para
+
+=begin head4
+%.doctype
+=end head4
+
+=begin para
+Has two keys, I<'type'> represents the document type, I<'value'> represents
+the rest of the DOCTYPE declaration (if applicable.)
+=end para
+
+=begin head4
+$.root
+=end head4
+
+=begin para
+The root XML::Element of the document.
+This also proxies many of the useful XML::Element methods, so that
+they can be called directly from the XML::Document object.
+=end para
+
+=begin head4
+$.filename
+=end head4
+
+=begin para
+If an XML::Document represents a file on the file-system, this is the
+path to that file.
+=end para
+
+=begin head4
+new(Str  filename)
+=end head4
+
+=begin para
+Parse the passed XML and return an XML::Document.
+If the I<$filename> variable is passed, the I<$.filename> property will be
+set on the object.
+=end para
+
+=begin head4
+new(XML::Element $root)
+=end head4
+
+=begin para
+Create a new XML::Document object, with the specified XML::Element as its
+root element.
+=end para
+
+=begin head4
+load(Str $filename)
+=end head4
+
+=begin para
+Create a new XML::Document object, representing the specified file.
+The I<$.filename> property will be set.
+=end para
+
+=begin head4
+save(Str  copy)
+=end head4
+
+=begin para
+Save the XML back into a file. If the I<$filename> parameter is not passed,
+we use the I<$.filename> property (if it is set, otherwise we return False.)
+=end para
+
+=begin para
+If the I<:copy> option is true, we don't re-set the I<$.filename> property.
+=end para
+
+=begin head3
+XML::Element [XML::Node]
+=end head3
+
+=begin para
+A Node representing an individual XML element. You can use array access syntax
+to access child nodes, and hash access syntax to access or set attributes.
+=end para
+
+=begin head4
+$.name [rw]
+=end head4
+
+=begin para
+The tag name of the element.
+=end para
+
+=begin head4
+@.nodes
+=end head4
+
+=begin para
+Any child nodes that may exist.
+All members of I<@.nodes> MUST be an object that does the XML::Node role.
+=end para
+
+=begin para
+Unless you are doing something that requires direct access of the I<@.nodes>
+property, it's probably easier (and less noisy) to use the array access syntax.
+=end para
+
+=begin head4
+%.attribs
+=end head4
+
+=begin para
+XML attributes for the current node. We expect the keys and values to be
+strings, but you can use numeric values if you want. Remember on emitting
+or parsing, all values will be strings, even if you set it as a number.
+=end para
+
+=begin para
+It is recommended that you do not use I<%.attribs> directly to set values.
+Use the I<set()> method or the hash access syntax to set attribute values,
+and use the I<unset()> method to delete attributes.
+=end para
+
+=begin head4
+$.idattr [rw, default: 'id']
+=end head4
+
+=begin para
+Specifies what attribute will be used as the XML Id when using the
+I<getElementById()> method. This defaults to I<'id'> which is used in (X)HTML
+and thus the most common.
+=end para
+
+=begin head4
+new(Str $xml)
+=end head4
+
+=begin para
+Return a new XML::Element object representing the specified XML string.
+=end para
+
+=begin head4
+insert(XML::Node $node)
+=end head4
+
+=begin para
+Insert an XML::Node at the beginning of our I<@.nodes> list.
+=end para
+
+=begin head4
+insert(Str $name, ...)
+=end head4
+
+=begin para
+Create a new XML::Element with the given name, and insert it to the
+beginning of our nodes list. Uses I<craft()> to build the element.
+=end para
+
+=begin para
+Any named parameters will be used as attributes, any positional parameters
+will be used as child nodes.
+=end para
+
+=begin para
+Positional parameters can be one of the following:
+=end para
+
+=item2 An XML::Node object. Will be added as is.
+=item2 A String. Will be included as an XML::Text node.
+=item2 A Capture. Calls I<craft()> using the Capture as the signature.
+=item2 Anything else, will be stringified, and added as an XML::Text node.
+
+=begin head4
+append(XML::Node $node)
+=end head4
+
+=begin para
+Append an XML::Node to the bottom of our I<@.nodes> list.
+=end para
+
+=begin head4
+append(Str $name, ...)
+=end head4
+
+=begin para
+See _insert (Str $name, ...)_ but at the bottom.
+=end para
+
+=begin head4
+before(XML::Node  new)
+=end head4
+
+=begin para
+Insert the I<$new> Node before the I<$existing> Node.
+It only works if the I<$existing> node is actually found in our I<@.nodes> list.
+=end para
+
+=begin head4
+before(XML::Node $node)
+=end head4
+
+=begin para
+Only works if our I<$.parent> is an XML::Element. Inserts the Node
+before the current one.
+=end para
+
+=begin head4
+before(Str $name, ...)
+=end head4
+
+=begin para
+See _insert (Str  node)_ and figure it out.
+=end para
+
+=begin head4
+after(XML::Node  new)
+=end head4
+
+=begin para
+Like _before($existing,  existing_ one.
+=end para
+
+=begin head4
+after(XML::Node $node)
+=end head4
+
+=begin para
+Like _before(XML::Node $node)_ but put the node after the current one.
+=end para
+
+=begin head4
+after(Str $name, ...)
+=end head4
+
+=begin para
+As per the others.
+=end para
+
+=begin head4
+insert-xml(Str $xml)
+=end head4
+
+=begin para
+Insert to top, a new XML::Element representing the given XML string.
+=end para
+
+=begin head4
+append-xml(Str $xml)
+=end head4
+
+=begin para
+Append to bottom, a new XML::Element representing the given XML string.
+=end para
+
+=begin head4
+before-xml(Str $xml)
+=end head4
+
+=begin para
+Insert a new XML::Element for the XML string, before the current element.
+=end para
+
+=begin head4
+after-xml(Str $xml)
+=end head4
+
+=begin para
+Insert a new XML::Element for the XML string, after the current element.
+=end para
+
+=begin head4
+insertBefore(XML::Node  existing)
+=end head4
+
+=begin para
+An alternative to _before($existing, $new)_ using DOM semantics.
+=end para
+
+=begin head4
+insertAfter(XML::Node  existing)
+=end head4
+
+=begin para
+An alternative to _after($existing, $new)_ using DOM-like semantics.
+=end para
+
+=begin head4
+replace(XML::Node  new)
+=end head4
+
+=begin para
+If the I<$existing> node is found, replace it with I<$new> ,
+otherwise, we return False.
+=end para
+
+=begin head4
+replaceChild(XML::Node  existing)
+=end head4
+
+=begin para
+An alternative to I<replace()> with DOM semantics.
+=end para
+
+=begin head4
+removeChild (XML::Node $node)
+=end head4
+
+=begin para
+Removes the I<$node> from our child I<@.nodes> if it exists.
+If it doesn't we return False.
+=end para
+
+=begin head4
+firstChild()
+=end head4
+
+=begin para
+Return our first child node.
+=end para
+
+=begin head4
+lastChild()
+=end head4
+
+=begin para
+Return our last child node.
+=end para
+
+=begin head4
+index-of($find)
+=end head4
+
+=begin para
+Pass it a smart match rule, and it will return array index of the first
+matching node.
+=end para
+
+=begin head4
+craft(Str $name, ...)
+=end head4
+
+=begin para
+Create and return a new XML::Element object with the given name.
+Named and positional parameters are handled as with _insert(Str $name, ...)_
+=end para
+
+=begin head4
+set(Str  value)
+=end head4
+
+=begin para
+Set an attribute with the given I<$name> to the specified I<$value> .
+If the I<$value> is a Str or Numeric is is added directly.
+If it is Bool and True, the value will be set to the same as the I<$name> .
+If it is Bool and False, the attribute will be deleted.
+=end para
+
+=begin para
+Any other value will be stringified using the I<.Str> method.
+=end para
+
+=begin head4
+set(...)
+=end head4
+
+=begin para
+A I<set()> call containing no positional paramters, will pass all named
+parameters to the above I<set()> as key/value pairs.
+=end para
+
+=begin head4
+unset($name, ...)
+=end head4
+
+=begin para
+Each positional parameter passed will be assumed to be the name of
+an attribute to delete.
+=end para
+
+=begin head4
+unset(:$name, ...)
+=end head4
+
+=begin para
+We assume the key of each named parameter passed to be the name of
+an attribute to delete. The value means absolutely nothing and is in fact
+ignored entirely.
+=end para
+
+=begin head4
+is-bool($attrib)
+=end head4
+
+=begin para
+Returns True if the given attribute exists, and has the same value
+as its name (the definition of an XML boolean.)
+=end para
+
+=begin head4
+add-values (Str  values)
+=end head4
+
+=begin para
+For the attribute with the given I<$name> , perform the set-wise union, I<(|)> ,
+of the set of I<$values> passed to the method and the existing values of the attribute.
+The results are converted back to a string value and stored in the attribute. For example:
+=end para
+
+=begin code :lang<perl>
+my $xml = from-xml('<test><folks we = "Al Barb Carl"/></test>');
+say $xml[0]; # <folks we="Al Barb Carl"/>
+
+$xml[0].add-values("we", <Carl Dave Ellie>.Set);
+say $xml[0]; # <folks we="Al Barb Carl Dave Ellie"/>
+=end code
+
+
+=begin head4
+delete-values (Str  values)
+=end head4
+
+=begin para
+For the attribute with the given I<$name> , perform the set-wise difference, I<(-)> ,
+of the existing values of the attribute and the I<$values> passed to the method.
+The results are converted back to a string value and stored in the attribute. For example:
+=end para
+
+=begin code :lang<perl>
+my $xml = from-xml('<test><folks we = "Al Barb Carl Dave Ellie"/></test>');
+say $xml[0]; # <folks we="Al Barb Carl Dave Ellie"/>
+
+$xml[0].delete-values("we", <Al Ellie Zack>.Set);
+say $xml[0]; # <folks we="Barb Carl Dave"/>
+=end code
+
+
+=begin head4
+test-values (Str $attrib, @tests)
+=end head4
+
+=begin para
+For the attribute with the given I<$name> , test each value in @tests for membership
+in the set of existing values of the attribute. Returns a hash that has the test values
+as keys and the boolean results of the membership test as values. For example:
+=end para
+
+=begin code :lang<perl>
+my $xml = from-xml('<test><folks we = "Barb Carl Dave"/></test>');
+say $xml[0]; # <folks we="Barb Carl Dave"/>
+
+my %test-results = $xml[0].test-values("we", <Al Carl Zack>.Array);
+say %test-results; # "Al" => Bool::False, "Carl" => Bool::True, "Zack" => Bool::False
+=end code
+
+
+=begin head4
+elements()
+=end head4
+
+=begin para
+Return all child XML::Elements.
+=end para
+
+=begin head4
+elements(...)
+=end head4
+
+=begin para
+Specify a query of named parameters. Special processing parameters are used:
+=end para
+
+=item2 TAG
+
+=begin para
+If set, elements must match the given tag name.
+=end para
+
+=item2 NS
+
+=begin para
+If set, elements must match the given namespace prefix.
+=end para
+
+=item2 URI
+
+=begin para
+If set, elements must match the given namespace URI.
+=end para
+
+=item2 RECURSE
+
+=begin para
+If set to a non-zero digit, child elements will also be searched for
+elements matching the queries. The recursion will traverse a tree depth
+of the value set to this parameter.
+=end para
+
+=item2 NEST
+
+=begin para
+Used with I<RECURSE> if this is set to True,
+this will recurse even child elements that matched the query.
+=end para
+
+=item2 SINGLE
+
+=begin para
+If this is set to True, we will return the first matched value.
+If no values match, we will return False.
+If I<SINGLE> is not specified, or is set to False, we return an Array
+of all matches (this may be empty if no nodes matched.)
+=end para
+
+=item2 OBJECT
+
+=begin para
+If this is set to True, instead of returning an Array of results,
+we will return a XML::Element object with the same name as the original
+input object, with its nodes set to the matched elements.
+=end para
+
+=item2 POS
+
+=begin para
+If set to an Int, the element must be the nth child to match.
+If set to a Range, the element's position must be within the range.
+If set to a Whatever match rule (e.g. * > 2) the rule must match.
+=end para
+
+=begin para
+If this is set to an Int, and RECURSE is not a positive value, then
+the SINGLE rule will be set to True.
+=end para
+
+=item2 NOTPOS
+
+=begin para
+Set to an Int, then we match if the element is not the nth child.
+=end para
+
+=item2 FIRST
+
+=begin para
+Match only if the element is the first child.
+=end para
+
+=begin para
+If RECURSE is not a positive value, then SINGLE will be set to True.
+=end para
+
+=item2 !FIRST
+
+=begin para
+Don't include the first child in the results.
+=end para
+
+=item2 LAST
+
+=begin para
+Match only if the element is the last child.
+=end para
+
+=begin para
+If RECURSE is not a positive value, then SINGLE will be set to True.
+=end para
+
+=item2 !LAST
+
+=begin para
+Don't include the last child in the results.
+=end para
+
+=item2 EVEN
+
+=begin para
+Match even child nodes. By default this is based on natural position
+(i.e. the second child element is even) see BYINDEX for details.
+=end para
+
+=item2 ODD
+
+=begin para
+Match odd child nodes. By default this is based on natural position
+(i.e. the first child element is odd) see BYINDEX for details.
+=end para
+
+=item2 BYINDEX
+
+=begin para
+If set to True, then the EVEN and ODD rules match against the array index
+value rather than the natural position. Therefore, the first element will
+be even, since it is in position 0.
+=end para
+
+=begin para
+Any other named paramters not in the above list, will be assumed to be
+attributes that must match. You can match by value, regular expression, or
+whatever code matches.
+=end para
+
+=begin code :lang<perl>
+
+  my $head = $html.elements(:TAG<head>, :SINGLE);
+  my @stylesheets = $head.elements(:TAG<link>, :rel<stylesheet>);
+  my @middle = $table.elements(:!FIRST, :!LAST);
+  my @not-red = $div.elements(:class(* ne 'red'));
+  my @elms-by-class-name = $html.elements(:RECURSE(Inf), :class('your-class-name')); # find all elements by class name
+=end code
+
+
+=begin head4
+lookfor(...)
+=end head4
+
+=begin para
+A shortcut for elements(..., :RECURSE)
+=end para
+
+=begin head4
+getElementById($id)
+=end head4
+
+=begin para
+Return the XML::Element with the given id.
+=end para
+
+=begin head4
+getElementsByTagName($name, :$object?)
+=end head4
+
+=begin para
+Return an array of XML::Elements with the given tag name.
+=end para
+
+=begin para
+If the boolean $object named parameter is true, then the 'OBJECT' rule will
+be applied to the query sent to elements().
+=end para
+
+=begin head4
+nsPrefix(Str $uri)
+=end head4
+
+=begin para
+Return the XML Namespace prefix.
+=end para
+
+=begin para
+If no prefix is found, it returns an undefined value.
+If the URI is the default namespace, it returns ''.
+=end para
+
+=begin head4
+nsURI(Str $prefix?)
+=end head4
+
+=begin para
+Returns the URI associated with a given XML Namespace prefix.
+If the I<$prefix> is not specified, return the default namespace.
+=end para
+
+=begin para
+Returns an undefined value if there is no XML Namespace URI assigned.
+=end para
+
+=begin head4
+setNamespace($uri, $prefix?)
+=end head4
+
+=begin para
+Associated the given XML Namespace prefix with the given URI.
+If no I<$prefix> is specified, it sets the default Namespace.
+=end para
+
+=begin head4
+comments()
+=end head4
+
+=begin para
+Return an array of all XML::Comment child nodes.
+=end para
+
+=begin head4
+cdata()
+=end head4
+
+=begin para
+Returns an array of all XML::CDATA child nodes.
+=end para
+
+=begin head4
+instructions()
+=end head4
+
+=begin para
+Returns an array of all XML::PI child nodes.
+=end para
+
+=begin head4
+contents()
+=end head4
+
+=begin para
+Returns an array of all XML::Text child nodes.
+=end para
+
+=begin head3
+XML::Text [XML::Node]
+=end head3
+
+=begin para
+A Node representing a portion of plain text.
+=end para
+
+=begin head4
+$.text
+=end head4
+
+=begin para
+The raw text, with no whitespace chopped out.
+=end para
+
+=begin head4
+Str(XML::Entity :$decode, Bool :$min, Bool :$strip, Bool :$chomp, Bool :numeric)
+=end head4
+
+=begin para
+Return the text, with various modifications depending on what was passed.
+If :decode is set, we decode XML entities using the XML::Entity object.
+If :min is set, we replace multiple whitespace characters with a single space.
+If :strip is set, we trim off leading and trailing whitespace.
+If :chomp is set, we remove the trailing newline.
+The :numeric value is passed to the decoder specified in :decode.
+=end para
+
+=begin head4
+string(XML::Entity $decode=XML::Entity.new)
+=end head4
+
+=begin para
+An alias for Str(:$decode, :min, :strip, :chomp, :numeric);
+=end para
+
+=begin para
+Basically, make the text node easier to read for humans.
+=end para
+
+=begin para
+The default $decode value is a new instance of XML::Entity.
+=end para
+
+=begin head3
+XML::Comment [XML::Node]
+=end head3
+
+=begin para
+Represents an XML Comment
+=end para
+
+=begin code :lang<xml>
+  <!-- comment here -->
+=end code
+
+
+=begin head4
+$.data
+=end head4
+
+=begin para
+Contains the string data of the content.
+=end para
+
+=begin head3
+XML::PI [XML::Node]
+=end head3
+
+=begin para
+Represents an XML processing instruction.
+=end para
+
+=begin code :lang<xml>
+  <?blort?>
+=end code
+
+
+=begin head4
+$.data
+=end head4
+
+=begin para
+Contains the string text of the processing instruction.
+=end para
+
+=begin head3
+XML::CDATA [XML::Node]
+=end head3
+
+=begin para
+Represents an XML CDATA structure.
+=end para
+
+=begin code :lang<xml>
+  <![CDATA[ random cdata content here ]]>
+=end code
+
+
+=begin head4
+$.data
+=end head4
+
+=begin para
+Contains the string text of the CDATA.
+=end para
+
+=begin head3
+XML::Entity
+=end head3
+
+=begin head4
+decode(Str  numeric)
+=end head4
+
+=begin para
+Decode XML entities found in the string.
+=end para
+
+=begin head4
+encode(Str  hex, ...)
+=end head4
+
+=begin para
+Encode known XML entities, plus any numeric values passed as extra parameters.
+Any additional parameters should be the regular base10 integer values of the
+additional characters that should be encoded.
+=end para
+
+=begin para
+If :hex is true we encode using hexidecimal entities instead of decimal.
+=end para
+
+=begin head4
+add (Str  value)
+=end head4
+
+=begin para
+Add a new custom entity named  value.
+=end para
+
+=begin head4
+add (Pair $pair)
+=end head4
+
+=begin para
+An alias for self.add($pair.key, $pair.value);
+=end para
+
+=begin head2
+Examples
+=end head2
+
+=begin para
+A quick example, for more, see the tests in the 't/' folder.
+=end para
+
+=begin head3
+test.xml
+=end head3
+
+=begin code :lang<xml>
+<test>
+  <greeting en="hello">world</greeting>
+  <for>
+    <item>Yes</item>
+    <item>No</item>
+    <item>Maybe</item>
+    <item>Who cares?</item>
+  </for>
+</test>
+=end code
+
+
+=begin head3
+test.raku
+=end head3
+
+=begin code :lang<raku>
+use XML;
+
+my $xml = from-xml-file('test.xml');
+
+say $xml[1]<en> ~ $xml[1][0]; ## "hello world"
+say $xml[3][5][0]; ## "Maybe"
+
+$xml[3].append('item', 'Never mind');
+
+say $xml[3][9]; ## <item>Never mind</item>
+=end code
+
+
+=begin head2
+Author
+=end head2
+
+=begin para
+Timothy Totten, supernovus on #raku, https://github.com/supernovus/
+=end para
+
+=begin head3
+Note
+=end head3
+
+=begin para
+The XML::Grammar library was originally based on the now defunct
+L<XML::Grammar::Document|http://github.com/krunen/xml> library,
+but modified to work with Rakudo 'ng' and later 'nom',
+with other changes specific to this library.
+=end para
+
+=begin head2
+License
+=end head2
+
+=begin para
+L<Artistic License 2.0|http://www.perlfoundation.org/artistic_license_2_0>
+=end para
+
+=end pod
