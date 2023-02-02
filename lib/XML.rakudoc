@@ -212,7 +212,7 @@ path to that file.
 =end para
 
 =begin head4
-new(Str  filename)
+new(Str $xml, :$filename)
 =end head4
 
 =begin para
@@ -240,7 +240,7 @@ The I<$.filename> property will be set.
 =end para
 
 =begin head4
-save(Str  copy)
+save(Str $filename?, Bool :$copy)
 =end head4
 
 =begin para
@@ -365,7 +365,7 @@ See _insert (Str $name, ...)_ but at the bottom.
 =end para
 
 =begin head4
-before(XML::Node  new)
+before(XML::Node $existing, XML::Node $new)
 =end head4
 
 =begin para
@@ -387,15 +387,15 @@ before(Str $name, ...)
 =end head4
 
 =begin para
-See _insert (Str  node)_ and figure it out.
+See _insert (Str $name, ...)_ and _before(XML::Node $node)_ and figure it out.
 =end para
 
 =begin head4
-after(XML::Node  new)
+after(XML::Node $existing, XML::Node $new)
 =end head4
 
 =begin para
-Like _before($existing,  existing_ one.
+Like _before($existing, $new)_ but put the node after the _$existing_ one.
 =end para
 
 =begin head4
@@ -447,7 +447,7 @@ Insert a new XML::Element for the XML string, after the current element.
 =end para
 
 =begin head4
-insertBefore(XML::Node  existing)
+insertBefore(XML::Node $new, XML::Node $existing)
 =end head4
 
 =begin para
@@ -455,7 +455,7 @@ An alternative to _before($existing, $new)_ using DOM semantics.
 =end para
 
 =begin head4
-insertAfter(XML::Node  existing)
+insertAfter(XML::Node $new, XML::Node $existing)
 =end head4
 
 =begin para
@@ -463,7 +463,7 @@ An alternative to _after($existing, $new)_ using DOM-like semantics.
 =end para
 
 =begin head4
-replace(XML::Node  new)
+replace(XML::Node $existing, XML::Node $new)
 =end head4
 
 =begin para
@@ -472,7 +472,7 @@ otherwise, we return False.
 =end para
 
 =begin head4
-replaceChild(XML::Node  existing)
+replaceChild(XML::Node $new, XML::Node $existing)
 =end head4
 
 =begin para
@@ -523,7 +523,7 @@ Named and positional parameters are handled as with _insert(Str $name, ...)_
 =end para
 
 =begin head4
-set(Str  value)
+set(Str $name, $value)
 =end head4
 
 =begin para
@@ -575,7 +575,7 @@ as its name (the definition of an XML boolean.)
 =end para
 
 =begin head4
-add-values (Str  values)
+add-values (Str $attrib, Set $values)
 =end head4
 
 =begin para
@@ -594,7 +594,7 @@ say $xml[0]; # <folks we="Al Barb Carl Dave Ellie"/>
 
 
 =begin head4
-delete-values (Str  values)
+delete-values (Str $attrib, Set $values)
 =end head4
 
 =begin para
@@ -995,7 +995,7 @@ XML::Entity
 =end head3
 
 =begin head4
-decode(Str  numeric)
+decode(Str $input, Bool :$numeric)
 =end head4
 
 =begin para
@@ -1003,7 +1003,7 @@ Decode XML entities found in the string.
 =end para
 
 =begin head4
-encode(Str  hex, ...)
+encode(Str $input, Bool :$hex, ...)
 =end head4
 
 =begin para
@@ -1017,11 +1017,11 @@ If :hex is true we encode using hexidecimal entities instead of decimal.
 =end para
 
 =begin head4
-add (Str  value)
+add (Str $name, Str $value)
 =end head4
 
 =begin para
-Add a new custom entity named  value.
+Add a new custom entity named $name with the replacement value $value.
 =end para
 
 =begin head4

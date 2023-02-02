@@ -109,7 +109,7 @@ The root XML::Element of the document. This also proxies many of the useful XML:
 
 If an XML::Document represents a file on the file-system, this is the path to that file.
 
-#### new(Str filename)
+#### new(Str $xml, :$filename)
 
 Parse the passed XML and return an XML::Document. If the *$filename* variable is passed, the *$.filename* property will be set on the object.
 
@@ -121,7 +121,7 @@ Create a new XML::Document object, with the specified XML::Element as its root e
 
 Create a new XML::Document object, representing the specified file. The *$.filename* property will be set.
 
-#### save(Str copy)
+#### save(Str $filename?, Bool :$copy)
 
 Save the XML back into a file. If the *$filename* parameter is not passed, we use the *$.filename* property (if it is set, otherwise we return False.)
 
@@ -183,7 +183,7 @@ Append an XML::Node to the bottom of our *@.nodes* list.
 
 See _insert (Str $name, ...)_ but at the bottom.
 
-#### before(XML::Node new)
+#### before(XML::Node $existing, XML::Node $new)
 
 Insert the *$new* Node before the *$existing* Node. It only works if the *$existing* node is actually found in our *@.nodes* list.
 
@@ -193,11 +193,11 @@ Only works if our *$.parent* is an XML::Element. Inserts the Node before the cur
 
 #### before(Str $name, ...)
 
-See _insert (Str node)_ and figure it out.
+See _insert (Str $name, ...)_ and _before(XML::Node $node)_ and figure it out.
 
-#### after(XML::Node new)
+#### after(XML::Node $existing, XML::Node $new)
 
-Like _before($existing, existing_ one.
+Like _before($existing, $new)_ but put the node after the _$existing_ one.
 
 #### after(XML::Node $node)
 
@@ -223,19 +223,19 @@ Insert a new XML::Element for the XML string, before the current element.
 
 Insert a new XML::Element for the XML string, after the current element.
 
-#### insertBefore(XML::Node existing)
+#### insertBefore(XML::Node $new, XML::Node $existing)
 
 An alternative to _before($existing, $new)_ using DOM semantics.
 
-#### insertAfter(XML::Node existing)
+#### insertAfter(XML::Node $new, XML::Node $existing)
 
 An alternative to _after($existing, $new)_ using DOM-like semantics.
 
-#### replace(XML::Node new)
+#### replace(XML::Node $existing, XML::Node $new)
 
 If the *$existing* node is found, replace it with *$new* , otherwise, we return False.
 
-#### replaceChild(XML::Node existing)
+#### replaceChild(XML::Node $new, XML::Node $existing)
 
 An alternative to *replace()* with DOM semantics.
 
@@ -259,7 +259,7 @@ Pass it a smart match rule, and it will return array index of the first matching
 
 Create and return a new XML::Element object with the given name. Named and positional parameters are handled as with _insert(Str $name, ...)_
 
-#### set(Str value)
+#### set(Str $name, $value)
 
 Set an attribute with the given *$name* to the specified *$value* . If the *$value* is a Str or Numeric is is added directly. If it is Bool and True, the value will be set to the same as the *$name* . If it is Bool and False, the attribute will be deleted.
 
@@ -281,7 +281,7 @@ We assume the key of each named parameter passed to be the name of an attribute 
 
 Returns True if the given attribute exists, and has the same value as its name (the definition of an XML boolean.)
 
-#### add-values (Str values)
+#### add-values (Str $attrib, Set $values)
 
 For the attribute with the given *$name* , perform the set-wise union, *(|)* , of the set of *$values* passed to the method and the existing values of the attribute. The results are converted back to a string value and stored in the attribute. For example:
 
@@ -293,7 +293,7 @@ $xml[0].add-values("we", <Carl Dave Ellie>.Set);
 say $xml[0]; # <folks we="Al Barb Carl Dave Ellie"/>
 ```
 
-#### delete-values (Str values)
+#### delete-values (Str $attrib, Set $values)
 
 For the attribute with the given *$name* , perform the set-wise difference, *(-)* , of the existing values of the attribute and the *$values* passed to the method. The results are converted back to a string value and stored in the attribute. For example:
 
@@ -509,19 +509,19 @@ Contains the string text of the CDATA.
 
 ### XML::Entity
 
-#### decode(Str numeric)
+#### decode(Str $input, Bool :$numeric)
 
 Decode XML entities found in the string.
 
-#### encode(Str hex, ...)
+#### encode(Str $input, Bool :$hex, ...)
 
 Encode known XML entities, plus any numeric values passed as extra parameters. Any additional parameters should be the regular base10 integer values of the additional characters that should be encoded.
 
 If :hex is true we encode using hexidecimal entities instead of decimal.
 
-#### add (Str value)
+#### add (Str $name, Str $value)
 
-Add a new custom entity named value.
+Add a new custom entity named $name with the replacement value $value.
 
 #### add (Pair $pair)
 
