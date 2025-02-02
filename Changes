@@ -2,6 +2,11 @@ Revision history for XML
 
 {{$NEXT}}
 
+0.3.4  2025-02-02T13:36:28+01:00
+    - Use new test file extensions
+    - Add CI badge for each OS
+    - Modernize source code and tests
+
 0.3.3  2023-01-18T16:28:57+01:00
     - Allow passing IO::Path objects for calls that utilize file names
 

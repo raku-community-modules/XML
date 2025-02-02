@@ -29,9 +29,9 @@
   ],
   "source-url": "https://github.com/raku-community-modules/XML.git",
   "tags": [
-    "xml"
+    "XML"
   ],
   "test-depends": [
   ],
-  "version": "0.3.3"
+  "version": "0.3.4"
 }

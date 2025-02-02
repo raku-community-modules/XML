@@ -1,5 +1,3 @@
-*.pir
-*.swp
-.precomp
-Makefile
-blib/
+.precomp/
+/XML-*
+*.rakucov
