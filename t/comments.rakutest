@@ -1,0 +1,11 @@
+use Test;
+
+use XML;
+
+plan 1;
+
+my $xml = from-xml-file($*PROGRAM.sibling('comments.xml'));
+
+ok 1;
+
+# vim: expandtab shiftwidth=4

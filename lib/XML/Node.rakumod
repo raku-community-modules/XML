@@ -1,73 +1,55 @@
-role XML::Node
-{
-  has $.parent is rw;
+role XML::Node {
+    has $.parent is rw;
 
-  ## For XML classes, the gist is the stringified form.
-  multi method gist (XML::Node:D:)
-  {
-    return self.Str();
-  }
-
-  method previousSibling ()
-  {
-    if $.parent ~~ ::(q<XML::Element>)
-    {
-      my $pos = $.parent.index-of(* === self);
-      if $pos > 0
-      {
-        return $.parent.nodes[$pos-1];
-      }
+    ## For XML classes, the gist is the stringified form.
+    multi method gist(XML::Node:D:) {
+        self.Str
     }
-    return Nil;
-  }
 
-  method nextSibling ()
-  {
-    if $.parent ~~ ::(q<XML::Element>)
-    {
-      my $pos = $.parent.index-of(* === self);
-      if $pos < $.parent.nodes.end
-      {
-        return $.parent.nodes[$pos+1];
-      }
+    method previousSibling() {
+        if $.parent ~~ ::(q<XML::Element>) {
+            my $pos = $.parent.index-of(* === self);
+            if $pos > 0 {
+                return $.parent.nodes[$pos-1];
+            }
+        }
+        Nil
     }
-    return Nil;
-  }
 
-  method remove ()
-  {
-    if $.parent ~~ ::(q<XML::Element>)
-    {
-      $.parent.removeChild(self);
+    method nextSibling() {
+        if $.parent ~~ ::(q<XML::Element>) {
+            my $pos = $.parent.index-of(* === self);
+            if $pos < $.parent.nodes.end {
+                return $.parent.nodes[$pos+1];
+            }
+        }
+        Nil
     }
-    return self;
-  }
 
-  method reparent (::(q<XML::Element>) $parent)
-  {
-    self.remove if $.parent.defined;
-    $.parent = $parent;
-    return self;
-  }
+    method remove() {
+        if $.parent ~~ ::(q<XML::Element>) {
+            $.parent.removeChild(self);
+        }
+        self
+    }
 
-  method cloneNode ()
-  {
-    return self.clone;
-  }
+    method reparent(::(q<XML::Element>) $parent) {
+        self.remove if $.parent.defined;
+        $.parent = $parent;
+        self
+    }
 
-  method ownerDocument ()
-  {
-    if $.parent ~~ ::(q<XML::Document>)
-    {
-      return $.parent;
+    method cloneNode() {
+        self.clone
     }
-    elsif $.parent ~~ ::(q<XML::Node>)
-    {
-      return $.parent.ownerDocument;
+
+    method ownerDocument() {
+        $.parent ~~ ::(q<XML::Document>)
+          ?? $.parent
+          !! $.parent ~~ ::(q<XML::Node>)
+            ?? $.parent.ownerDocument
+            !! Nil
     }
-    else
-    {
-      return Nil;
-    }
-  }
 }
+
+# vim: expandtab shiftwidth=4

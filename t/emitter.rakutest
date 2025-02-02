@@ -1,8 +1,5 @@
-#!/usr/bin/env raku
-
-#use lib 'lib';
-
 use Test;
+
 use XML;
 
 plan 5;
@@ -30,3 +27,4 @@ $text ~~ s/'<bullocks>'/<bullocks standalone="standalone">/;
 is $xml.nodes[1].attribs<standalone>, 'standalone', 'set using Boolean.';
 is $xml, $text, 'element after set serialized properly';
 
+# vim: expandtab shiftwidth=4

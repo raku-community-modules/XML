@@ -1,7 +1,6 @@
-#!/usr/bin/env raku
+use Test;
 
 use XML::Entity;
-use Test;
 
 plan 3;
 
@@ -18,3 +17,5 @@ is $encoded1, $want-encoded1, 'encode-xml-entity(:numeric) works.';
 
 my $encoded2 = encode-xml-entities($decoded, 126, :hex);
 is $encoded2, $want-encoded2, 'encode-xml-entity(:numeric, :hex) works.';
+
+# vim: expandtab shiftwidth=4

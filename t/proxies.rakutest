@@ -1,13 +1,10 @@
-#!/usr/bin/env raku
-
-#use lib 'lib';
-
 use Test;
+
 use XML;
 
 plan 11;
 
-my $doc = from-xml-file('./t/query.xml');
+my $doc = from-xml-file($*PROGRAM.sibling('query.xml'));
 
 ok $doc ~~ XML::Document, 'from-xml-file works.';
 
@@ -30,3 +27,5 @@ lives-ok { $doc[1] = XML::Text.new(:text("The new title")) }, 'Write through pos
 is $xml.nodes[1].string, "The new title", 'Postcircumfix [] on doc works after write.';
 
 is $doc.nodes[1].string, "The new title", '.nodes on doc works after write.';
+
+# vim: expandtab shiftwidth=4

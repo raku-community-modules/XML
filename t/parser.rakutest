@@ -1,8 +1,5 @@
-#!/usr/bin/env raku
-
-#use lib 'lib';
-
 use Test;
+
 use XML;
 
 plan 14;
@@ -47,3 +44,5 @@ dies-ok  { from-xml('<foo><bar 2d="bar" /></foo>') }, 'invalid attribute name';
 my $numdoc = from-xml('<foo><bar-1>baz</bar-1></foo>');
 
 is $numdoc.root[0].name, 'bar-1', 'parsed tag name with number';
+
+# vim: expandtab shiftwidth=4

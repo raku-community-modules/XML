@@ -1,6 +1,5 @@
-#!/usr/bin/env raku
-
 use Test;
+
 use XML;
 
 plan 1;
@@ -8,3 +7,5 @@ plan 1;
 my $xml1 = from-xml('<test ATTRIB="&quot;text&quot;"></test>');
 
 lives-ok { from-xml($xml1.Str) };
+
+# vim: expandtab shiftwidth=4

@@ -1,14 +1,11 @@
-#!/usr/bin/env raku
-
-#use lib 'lib';
-
 use Test;
+
 use XML;
 
 plan 15;
 
 ## This should be in its own test, but for now this will do.
-my $xml = XML::Document.load('./t/namespaces.xml');
+my $xml = XML::Document.load($*PROGRAM.sibling('namespaces.xml'));
 
 ok $xml ~~ XML::Document, 'XML::Document.load() works';
 
@@ -70,3 +67,5 @@ my $nesteduri = '/my/nested/namespace';
 @items = $xml.root.elements(:URI($nesteduri), :RECURSE(1), :NEST(1));
 
 is @items.elems, 2, 'elements(:URI) returns the correct count.';
+
+# vim: expandtab shiftwidth=4

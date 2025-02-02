@@ -1,13 +1,10 @@
-#!/usr/bin/env raku
-
-#use lib 'lib';
-
 use Test;
+
 use XML;
 
 plan 32;
 
-my $xml = from-xml-file('./t/test1.xml');
+my $xml = from-xml-file($*PROGRAM.sibling('test1.xml'));
 
 my $two = $xml.elements(:POS(1));
 
@@ -88,3 +85,4 @@ is @two-to-three.elems, 2, ':POS(1..2) returns correct number of elements.';
 is @two-to-three[0]<id>, 'two.2', 'First :POS(1..2) element is correct.';
 is @two-to-three[1]<id>, 'two.3', 'Second :POS(1..2) element is correct.';
 
+# vim: expandtab shiftwidth=4

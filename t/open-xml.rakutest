@@ -1,0 +1,12 @@
+use Test;
+
+use XML;
+
+plan 4;
+
+ok open-xml('<xml></xml>'), 'open xml from Str';
+ok open-xml($*PROGRAM.sibling('example.xml').absolute), 'open xml from Str';
+ok open-xml($*PROGRAM.sibling('example.xml')), 'open xml from IO::Path';
+ok open-xml($*PROGRAM.sibling('example.xml').open), 'open xml from IO::Handle;'
+
+# vim: expandtab shiftwidth=4

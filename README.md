@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/raku-community-modules/XML/workflows/test/badge.svg)](https://github.com/raku-community-modules/XML/actions)
+[![Actions Status](https://github.com/raku-community-modules/XML/actions/workflows/linux.yml/badge.svg)](https://github.com/raku-community-modules/XML/actions) [![Actions Status](https://github.com/raku-community-modules/XML/actions/workflows/macos.yml/badge.svg)](https://github.com/raku-community-modules/XML/actions) [![Actions Status](https://github.com/raku-community-modules/XML/actions/workflows/windows.yml/badge.svg)](https://github.com/raku-community-modules/XML/actions)
 
 An Object-Oriented XML Framework for Raku
 =========================================

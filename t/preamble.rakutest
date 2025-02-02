@@ -1,8 +1,5 @@
-#!/usr/bin/env raku
-
-#use lib 'lib';
-
 use Test;
+
 use XML;
 
 plan 18;
@@ -58,3 +55,4 @@ is $xml.version, '1.0', 'Read version  on xml with encoding is correct (all sq)'
 is $xml.encoding, 'UTF-8', 'Read encoding is correct (all sq)';
 is ~$xml, $text, 'With preamble and encoding xml is correct (all sq)'; ## need to check with $text with double quotes as that is what is emitted
 
+# vim: expandtab shiftwidth=4

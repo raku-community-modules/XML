@@ -1,13 +1,10 @@
-#!/usr/bin/env raku
-
-#use lib 'lib';
-
 use Test;
+
 use XML;
 
 plan 32;
 
-my $text = slurp('./t/query.xml');
+my $text = slurp($*PROGRAM.sibling('query.xml'));
 
 #say "We're starting the parse";
 
@@ -96,3 +93,5 @@ is-deeply @items.map(*.attribs<name>).List, <m1 m2>, "only expected elements are
 @items = $subxml.lookfor(:TAG<option>, :class{ !(.defined && .contains("skip")) });
 is +@items, 2, "a code matcher gives us all expected elements";
 is-deeply @items.map(*.attribs<name>).List, <m2 m3>, "only expected elements are given";
+
+# vim: expandtab shiftwidth=4

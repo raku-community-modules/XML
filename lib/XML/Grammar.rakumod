@@ -91,3 +91,5 @@ token namestartchar {
   || <[\xF900..\xFDCF]> || <[\xFDF0..\xFFFD]> || <[\x10000..\xEFFFF]> }
 token namechar { <namestartchar> ||  "-" || "." || <[0..9]> || \xB7 || <[\x0300..\x036F]> || <[\x203F..\x2040]> }
 token name { <.namestartchar> <.namechar>* }
+
+# vim: expandtab shiftwidth=4
