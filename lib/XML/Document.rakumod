@@ -3,7 +3,7 @@ use XML::Element;
 use XML::Grammar;
 use XML::Text;
 
-class XML::Document does XML::Node {
+class XML::Document does XML::Node does Positional {
     has $.version = '1.0';
     has $.encoding;
     has %.doctype;
