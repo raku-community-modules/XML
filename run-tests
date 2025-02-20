@@ -62,7 +62,7 @@ say ""
   || $enable-spesh-log;
 
 say "Testing {
-    "dist.ini".IO.lines.head.substr(7)
+    (try "dist.ini".IO.lines.head.substr(7)) // "..."
 }{
     " including author tests" if $author
 }";

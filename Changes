@@ -2,6 +2,9 @@ Revision history for XML
 
 {{$NEXT}}
 
+0.3.5  2025-02-20T12:26:13+01:00
+    - Make ::Document/Element do role Positional, Tim Nelson++
+
 0.3.4  2025-02-02T13:36:28+01:00
     - Use new test file extensions
     - Add CI badge for each OS
