@@ -4,7 +4,7 @@ use XML::Comment;
 use XML::PI;
 use XML::CDATA;
 
-class XML::Element does XML::Node {
+class XML::Element does XML::Node does Positional {
     use XML::Grammar;
     has $.name    is rw;         ## We may want to change element type.
     has @.nodes   is rw;         ## Cloning requires rw.
