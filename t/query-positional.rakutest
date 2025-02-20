@@ -2,7 +2,7 @@ use Test;
 
 use XML;
 
-plan 32;
+plan 33;
 
 my $xml = from-xml-file($*PROGRAM.sibling('test1.xml'));
 
