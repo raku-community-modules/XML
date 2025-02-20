@@ -30,6 +30,10 @@ class XML::Document does XML::Node does Positional {
         $.root[$offset]
     }
 
+    method elems() {
+        $.root.elems;
+    }
+
     method AT-KEY($offset) is rw {
         $.root{$offset};
     }

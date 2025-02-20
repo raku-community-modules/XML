@@ -647,6 +647,10 @@ class XML::Element does XML::Node does Positional {
         )
     }
 
+    method elems() {
+        return @.nodes.elems;
+    }
+
     method AT-KEY($offset) is rw {
         my $self = self;
         Proxy.new(
