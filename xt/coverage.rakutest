@@ -4,7 +4,7 @@ plan 2;
 
 coverage-at-least 68;
 
-uncovered-at-most 127;
+uncovered-at-most 128;
 
 source-with-coverage;
 

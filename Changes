@@ -2,6 +2,9 @@ Revision history for XML
 
 {{$NEXT}}
 
+0.3.6  2025-02-21T10:57:09+01:00
+    - Add ::Document/Element.elems method, Tim Nelson++
+
 0.3.5  2025-02-20T12:26:13+01:00
     - Make ::Document/Element do role Positional, Tim Nelson++
 

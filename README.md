@@ -127,6 +127,10 @@ Save the XML back into a file. If the *$filename* parameter is not passed, we us
 
 If the *:copy* option is true, we don't re-set the *$.filename* property.
 
+#### .elems()
+
+See XML::Element.elems() for details, but this basically tells you how many child nodes (whether Element nodes or otherwise) the root node has. 
+
 ### XML::Element [XML::Node]
 
 A Node representing an individual XML element. You can use array access syntax to access child nodes, and hash access syntax to access or set attributes.
@@ -450,6 +454,14 @@ Returns an array of all XML::PI child nodes.
 #### contents()
 
 Returns an array of all XML::Text child nodes.
+
+#### .elems()
+
+XML and Raku have quite different meanings for the word "element". In XML, an Element is a <tag/>, whereas in Raku, it's a single element in a one-dimensional list/array. 
+
+The TL;DR is that .elements() uses the XML meaning, whereas .elems() uses the Raku meaning. 
+
+The slightly longer version is that, since XML::Element does Positional, it has to have a .elems() method that supports the Raku meaning. So .elems will tell you how many children the node has, not the number of XML::Element children (since there will likely be some text nodes and things in there as well). 
 
 ### XML::Text [XML::Node]
 
