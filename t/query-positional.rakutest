@@ -2,7 +2,7 @@ use Test;
 
 use XML;
 
-plan 32;
+plan 33;
 
 my $xml = from-xml-file($*PROGRAM.sibling('test1.xml'));
 
@@ -84,5 +84,18 @@ my @two-to-three = $two.elements(:POS(1..2));
 is @two-to-three.elems, 2, ':POS(1..2) returns correct number of elements.';
 is @two-to-three[0]<id>, 'two.2', 'First :POS(1..2) element is correct.';
 is @two-to-three[1]<id>, 'two.3', 'Second :POS(1..2) element is correct.';
+
+subtest	'Positional role', {
+	plan 4;
+
+	# Test Positional role on XML::Document
+	ok $xml ~~ Positional, "XML::Document does Positional";
+	my $root-element = $xml.root;
+	is $root-element.elems, 7, "XML::Document.elems (NOT .elements) returns the correct number for the Positional role";
+
+	# Test Positional role on XML::Element
+	ok $root-element ~~ Positional, "XML::Element does Positional";
+	is $root-element.elems, 7, "\$root-element.elems (NOT .elements) returns the correct number for the Positional role";
+}
 
 # vim: expandtab shiftwidth=4
