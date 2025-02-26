@@ -8,8 +8,8 @@ rule TOP {
   $
 }
 
-regex comment { '<!--' $<content>=[.*?] '-->' }
-regex pi { '<?' $<content>=[.*?] '?>' }
+regex comment { '<!--' ~ '-->' $<content>=[[<!before '-->'> . ]*?] }
+regex pi { '<?' ~ '?>' $<content>=[[<!before '?>'> . ]*?] }
 
 rule xmldecl {
    '<?xml'
