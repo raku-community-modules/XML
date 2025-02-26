@@ -2,8 +2,8 @@ unit grammar XML::Grammar;
 
 rule TOP {
   ^
-  <xmldecl>?      [ <comment> | <pi> ]*
-  <doctypedecl>?  [ <comment> | <pi> ]*
+  [<xmldecl>      [ <comment> | <pi> ]* ]?
+  [<doctypedecl>  [ <comment> | <pi> ]* ]?
   <root=element>  [ <comment> | <pi> ]*
   $
 }
