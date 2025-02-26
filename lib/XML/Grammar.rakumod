@@ -2,14 +2,14 @@ unit grammar XML::Grammar;
 
 rule TOP {
   ^
-  <xmldecl>?      [ <comment> | <pi> ]*
-  <doctypedecl>?  [ <comment> | <pi> ]*
+  [<xmldecl>      [ <comment> | <pi> ]* ]?
+  [<doctypedecl>  [ <comment> | <pi> ]* ]?
   <root=element>  [ <comment> | <pi> ]*
   $
 }
 
-regex comment { '<!--' $<content>=[.*?] '-->' }
-regex pi { '<?' $<content>=[.*?] '?>' }
+regex comment { '<!--' ~ '-->' $<content>=[[<!before '-->'> . ]*?] }
+regex pi { '<?' ~ '?>' $<content>=[[<!before '?>'> . ]*?] }
 
 rule xmldecl {
    '<?xml'
